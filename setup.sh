@@ -1,6 +1,6 @@
 #!/bin/bash
 # One Piece Agents — Setup Script
-# Configura un proyecto existente para usar la tripulación
+# Integra la tripulación en un proyecto existente
 
 set -e
 
@@ -16,103 +16,137 @@ TARGET_PROJECT="$(cd "$TARGET_PROJECT" && pwd)"
 
 echo "🏴‍☠️ One Piece Agents — Setup"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Base pirata: $AGENTS_BASE"
-echo "Proyecto:    $TARGET_PROJECT"
+echo "Base pirata:  $AGENTS_BASE"
+echo "Proyecto:     $TARGET_PROJECT"
 echo ""
 
-# Create .claude directory if it doesn't exist
+# ── 1. Directorio .claude ──────────────────────────────────────────────────────
 mkdir -p "$TARGET_PROJECT/.claude"
 
-# Create symlink to agents
-if [ -L "$TARGET_PROJECT/.claude/one-piece-agents" ]; then
-  rm "$TARGET_PROJECT/.claude/one-piece-agents"
+# ── 2. Symlink a los agentes ───────────────────────────────────────────────────
+SYMLINK="$TARGET_PROJECT/.claude/one-piece-agents"
+if [ -L "$SYMLINK" ]; then
+  rm "$SYMLINK"
 fi
-ln -s "$AGENTS_BASE/agents" "$TARGET_PROJECT/.claude/one-piece-agents"
+ln -s "$AGENTS_BASE/agents" "$SYMLINK"
 echo "✅ Symlink creado: .claude/one-piece-agents → $AGENTS_BASE/agents"
 
-# Create or append to CLAUDE.md
+# ── 3. Detectar AGENTS.md existente ───────────────────────────────────────────
+AGENTS_MD=""
+if [ -f "$TARGET_PROJECT/AGENTS.md" ]; then
+  AGENTS_MD="$TARGET_PROJECT/AGENTS.md"
+  echo "📄 AGENTS.md detectado en el proyecto — se referenciará en la configuración"
+elif [ -f "$TARGET_PROJECT/.claude/AGENTS.md" ]; then
+  AGENTS_MD="$TARGET_PROJECT/.claude/AGENTS.md"
+  echo "📄 AGENTS.md detectado en .claude/ — se referenciará en la configuración"
+fi
+
+# ── 4. Verificar openspec ──────────────────────────────────────────────────────
+if ! command -v openspec &> /dev/null; then
+  echo "⚠️  openspec no está instalado. El flujo /opsx:* no funcionará."
+  echo "   Instalar con: npm install -g openspec"
+fi
+
+# ── 5. Actualizar CLAUDE.md ────────────────────────────────────────────────────
 CLAUDE_MD="$TARGET_PROJECT/CLAUDE.md"
 
-# Check if already configured
 if [ -f "$CLAUDE_MD" ] && grep -q "One Piece Agents" "$CLAUDE_MD" 2>/dev/null; then
-  echo "⚠️  CLAUDE.md ya tiene configuración de One Piece Agents, saltando..."
+  echo "⚠️  CLAUDE.md ya tiene configuración de One Piece Agents — saltando"
 else
-  # Append to existing or create new
-  cat >> "$CLAUDE_MD" << 'CLAUDE_EOF'
+  # Construir bloque de AGENTS.md si existe
+  if [ -n "$AGENTS_MD" ]; then
+    RELATIVE_AGENTS_MD="${AGENTS_MD#$TARGET_PROJECT/}"
+    AGENTS_MD_BLOCK="
+### Agentes del proyecto
+
+Este proyecto tiene su propio archivo de agentes en \`$RELATIVE_AGENTS_MD\`.
+Lee ese archivo para entender los agentes y reglas específicas de este proyecto.
+La tripulación One Piece se complementa con esas reglas — no las reemplaza.
+"
+  else
+    AGENTS_MD_BLOCK=""
+  fi
+
+  cat >> "$CLAUDE_MD" << CLAUDE_EOF
 
 # One Piece Agents — Tripulación Activa 🏴‍☠️
 
-## Sistema de Agentes
+Los agentes están disponibles en \`.claude/one-piece-agents/\`. Cada agente tiene un \`AGENT.md\` con su system prompt completo y un \`tools.yaml\` con sus herramientas permitidas.
+$AGENTS_MD_BLOCK
+## Orquestador: Luffy
 
-Este proyecto usa el sistema One Piece Agents para desarrollo. Los agentes están en `.claude/one-piece-agents/`.
+Describe tu misión y Luffy coordina todo el flujo:
 
-### Cómo funciona
+1. **Explore** — pregunta todo lo necesario antes de avanzar
+2. **Propose** — crea proposal, specs, design y tasks
+3. **Apply** — delega a los agentes correctos, Law verifica cada paso
+4. **Verify** — Usopp (tests) + Jinbe (seguridad) en paralelo
+5. **Archive** — solo cuando todo pasa y el usuario aprueba
 
-El usuario interactúa con **Luffy** (orquestador) quien delega a agentes especializados:
+## Tripulación
 
-| Agente | Rol | Cuándo |
-|--------|-----|--------|
-| 🏴‍☠️ Luffy | Orquestador — no programa, delega | Siempre |
+| Agente | Rol | Fase |
+|--------|-----|------|
+| 🏴‍☠️ Luffy | Orquestador — nunca programa | Todas |
 | 📚 Robin | Research & Specs | Explore, Propose |
-| ⚔️ Zoro | Backend | Apply |
-| 🍳 Sanji | Database (PostgreSQL+PostGIS) | Apply |
-| 🗺️ Nami | Frontend | Apply |
-| 🎵 Brook | UX Copy & A11y | Apply |
-| 🔧 Franky | DevOps & Infra | Apply |
-| ⚕️ Law | Verificador continuo | Después de cada paso |
-| 🌊 Jinbe | Security | Verify |
-| 🎯 Usopp | Testing final | Verify |
+| ⚔️ Zoro | Backend (.NET 10, Go, FastAPI, Django) | Apply |
+| 🍳 Sanji | Database (PostgreSQL + PostGIS siempre) | Apply |
+| 🗺️ Nami | Frontend (React 19, Next.js, Astro) | Apply |
+| 🎵 Brook | UX Copy & Accessibility (WCAG 2.1 AA) | Apply |
+| 🔧 Franky | DevOps & Infrastructure (Docker, CI/CD) | Apply |
+| ⚕️ Law | Verificador continuo — verifica cada paso | Apply (continuo) |
+| 🌊 Jinbe | Security Review (OWASP Top 10) | Verify |
+| 🎯 Usopp | Testing final — gate para archive | Verify |
 | 🩺 Chopper | Debug & Hotfix | Cuando hay bugs |
 
-### Flujo OpenSpec
+## Reglas del sistema
 
-```
-EXPLORE → PROPOSE → APPLY → VERIFY → ARCHIVE
-(Luffy)   (Luffy)   (Crew)   (Usopp    (Luffy)
-                     +Law     +Jinbe)
-```
+- **Idioma**: SIEMPRE en español — sin excepciones
+- **Backend**: Swagger/OpenAPI + curls obligatorios en cada endpoint
+- **Frontend**: Verificación en Chrome obligatoria en cada componente
+- **Database**: PostgreSQL + PostGIS — siempre
+- **Law**: verifica después de cada agente dev — nunca se salta
+- **Archive**: solo si Usopp PASS + Jinbe PASS + usuario aprueba
 
-### Reglas Estrictas
+## Comandos disponibles
 
-1. **Backend**: Swagger/OpenAPI + curls obligatorios en cada endpoint
-2. **Frontend**: Verificación en Chrome (claude-in-chrome) obligatoria en cada componente
-3. **Law verifica CADA paso** — no se salta nunca
-4. **3 capas de verificación**: Law (paso a paso) → Jinbe (seguridad) → Usopp (tests finales)
-5. **Luffy pregunta TODO** en explore antes de avanzar
+\`\`\`
+/opsx:explore   → Iniciar exploración con Luffy como interrogador
+/opsx:propose   → Crear el plan completo (proposal, specs, design, tasks)
+/opsx:apply     → Implementar con los agentes especializados
+/opsx:verify    → Verificación final con Usopp y Jinbe
+/opsx:archive   → Archivar el cambio completado
+/opsx:ff        → Fast-forward: todos los artefactos de una vez
+\`\`\`
 
-### Para invocar la tripulación
+## Referencia completa
 
-Describe tu misión y el orquestador (Luffy) se encargará de:
-1. Preguntar todo lo necesario (explore)
-2. Crear el plan (propose)
-3. Delegar a los agentes correctos (apply)
-4. Verificar cada paso (Law) y al final (Usopp + Jinbe)
-5. Archivar cuando todo está verificado
-
-### Referencia de agentes
-
-Para ver la configuración detallada de cada agente, lee:
-- `.claude/one-piece-agents/<nombre>/AGENT.md` — System prompt completo
-- `.claude/one-piece-agents/<nombre>/tools.yaml` — Herramientas permitidas
-- `.claude/one-piece-agents/shared/` — Reglas compartidas
+- \`.claude/one-piece-agents/<agente>/AGENT.md\` — System prompt del agente
+- \`.claude/one-piece-agents/<agente>/tools.yaml\` — Tools permitidas
+- \`.claude/one-piece-agents/shared/\` — Reglas compartidas (logging, flujo, stacks)
 CLAUDE_EOF
 
-  echo "✅ CLAUDE.md actualizado con configuración One Piece Agents"
+  echo "✅ CLAUDE.md actualizado con la configuración de la tripulación"
 fi
 
-# Create .gitignore entry for symlink (optional)
+# ── 6. Actualizar .gitignore ───────────────────────────────────────────────────
 GITIGNORE="$TARGET_PROJECT/.gitignore"
 if [ -f "$GITIGNORE" ]; then
   if ! grep -q ".claude/one-piece-agents" "$GITIGNORE" 2>/dev/null; then
-    echo "" >> "$GITIGNORE"
-    echo "# One Piece Agents (symlink to central repo)" >> "$GITIGNORE"
-    echo ".claude/one-piece-agents" >> "$GITIGNORE"
+    printf "\n# One Piece Agents (symlink al repo central — no versionar)\n.claude/one-piece-agents\n" >> "$GITIGNORE"
     echo "✅ .gitignore actualizado"
   fi
 fi
 
+# ── 7. Resumen ─────────────────────────────────────────────────────────────────
 echo ""
 echo "🏴‍☠️ ¡La tripulación está lista para zarpar!"
 echo ""
-echo "Siguiente paso: abre el proyecto con Claude Code y describe tu misión."
-echo "Luffy se encargará del resto."
+echo "  Siguiente paso: abre el proyecto con Claude Code"
+echo "  y describe tu misión. Luffy se encarga del resto."
+echo ""
+if [ -n "$AGENTS_MD" ]; then
+  RELATIVE="${AGENTS_MD#$TARGET_PROJECT/}"
+  echo "  📄 AGENTS.md del proyecto: $RELATIVE (referenciado en CLAUDE.md)"
+  echo ""
+fi
