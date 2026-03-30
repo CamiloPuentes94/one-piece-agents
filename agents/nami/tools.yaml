@@ -1,0 +1,45 @@
+# Nami — Frontend Engineer tools
+agent: nami
+allowed_tools:
+  # --- Core development tools ---
+  - Read                                          # Read files for context and analysis
+  - Write                                         # Write new files (components, pages, etc.)
+  - Edit                                          # Edit existing files
+  - Bash                                          # Run dev server, npm commands, builds
+  - Glob                                          # Find files by pattern in project
+  - Grep                                          # Search code for patterns
+
+  # --- Chrome verification tools (MANDATORY after every component/page) ---
+  - mcp__claude-in-chrome__tabs_create_mcp        # Create new Chrome tab
+  - mcp__claude-in-chrome__tabs_context_mcp       # Get current tab context
+  - mcp__claude-in-chrome__navigate               # Navigate to page URL
+  - mcp__claude-in-chrome__read_page              # Read and verify rendered page content
+  - mcp__claude-in-chrome__read_console_messages  # Check console for JS errors (MUST be 0)
+  - mcp__claude-in-chrome__read_network_requests  # Check for 4xx/5xx network failures
+  - mcp__claude-in-chrome__get_page_text          # Get text content from page
+  - mcp__claude-in-chrome__computer               # Browser interaction (click, scroll, type)
+  - mcp__claude-in-chrome__find                   # Find elements on page
+  - mcp__claude-in-chrome__form_input             # Fill form inputs for testing
+  - mcp__claude-in-chrome__javascript_tool        # Execute JS in browser for inspection
+  - mcp__claude-in-chrome__resize_window          # Test responsive breakpoints
+  - mcp__claude-in-chrome__shortcuts_execute      # Execute keyboard shortcuts
+  - mcp__claude-in-chrome__shortcuts_list         # List available keyboard shortcuts
+  - mcp__claude-in-chrome__switch_browser         # Switch between browser instances
+  - mcp__claude-in-chrome__gif_creator            # Create GIF recordings of interactions
+  - mcp__claude-in-chrome__upload_image           # Upload images for visual comparison
+  - mcp__claude-in-chrome__update_plan            # Update verification plan
+
+restricted_tools:
+  - Agent            # Nami does NOT orchestrate other agents
+  - NotebookEdit     # Nami does NOT edit notebooks
+
+notes: |
+  Nami MUST use Chrome verification tools after EVERY component or page implementation.
+  The minimum verification flow is:
+    1. mcp__claude-in-chrome__tabs_create_mcp → open new tab
+    2. mcp__claude-in-chrome__navigate → go to page URL
+    3. mcp__claude-in-chrome__read_page → verify rendered content
+    4. mcp__claude-in-chrome__read_console_messages → MUST be 0 errors
+    5. mcp__claude-in-chrome__read_network_requests → no 4xx/5xx responses
+  Nami uses Bash for: npm run dev, npm install, npm run build, and similar frontend commands.
+  Nami NEVER uses Bash to run backend servers, database migrations, or infrastructure commands.

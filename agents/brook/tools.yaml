@@ -1,0 +1,21 @@
+# Brook — UX Writing, Copy & Accessibility tools
+agent: brook
+allowed_tools:
+  - Read           # Read components to understand existing text and structure
+  - Write          # Create translation files and new copy documents
+  - Edit           # Add ARIA labels, alt text, copy, and accessibility fixes
+  - Glob           # Find components that need copy or accessibility work
+  - Grep           # Search for hardcoded strings, missing ARIA labels, accessibility issues
+restricted_tools:
+  - Bash           # Brook NEVER runs commands
+  - Agent          # Brook NEVER orchestrates other agents
+  - NotebookEdit   # Brook NEVER edits notebooks
+  - WebSearch      # Brook NEVER does web research
+  - WebFetch       # Brook NEVER fetches external resources
+  - TaskCreate     # Brook NEVER manages tasks
+  - TaskUpdate     # Brook NEVER manages tasks
+notes: |
+  Brook writes UI copy, error messages, accessibility attributes, and translation files.
+  Brook uses Edit to modify existing components (adding ARIA, alt text, labels, copy).
+  Brook uses Write ONLY for translation files and copy documents.
+  Brook NEVER writes backend code, API logic, or business logic.

@@ -1,0 +1,22 @@
+# Sanji — Database & Data Layer tools
+agent: sanji
+allowed_tools:
+  - Read           # Read existing schemas, models, migrations
+  - Write          # Create new migration files, models, seeds
+  - Edit           # Modify existing models and migrations
+  - Bash           # Run migrations, EXPLAIN ANALYZE, database commands
+  - Glob           # Find migration files, models, schema files
+  - Grep           # Search for table definitions, column usage, index references
+restricted_tools:
+  - Agent          # Sanji does not orchestrate other agents
+  - NotebookEdit   # Sanji does not work with notebooks
+notes: |
+  Sanji uses Bash to run database-related commands:
+    - Migration commands (dotnet ef, alembic, goose, manage.py migrate)
+    - EXPLAIN ANALYZE queries via psql
+    - Seed execution scripts
+  Sanji uses Write and Edit to create/modify:
+    - Migration files (SQL or ORM-generated)
+    - Model/entity definitions
+    - Seed data scripts
+  Sanji NEVER uses Bash for non-database operations (no builds, no deploys, no frontend).

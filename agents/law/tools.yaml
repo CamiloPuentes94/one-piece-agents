@@ -1,0 +1,35 @@
+# Law — Continuous Verifier tools
+agent: law
+allowed_tools:
+  - Read                                        # Read files for context and specs
+  - Bash                                        # Execute curls, docker commands, migrations
+  - Glob                                        # Find files in project
+  - Grep                                        # Search code for patterns
+  - mcp__claude-in-chrome__tabs_create_mcp      # Open new browser tab
+  - mcp__claude-in-chrome__tabs_context_mcp     # Get current tab context
+  - mcp__claude-in-chrome__navigate             # Navigate to URL
+  - mcp__claude-in-chrome__read_page            # Read page content
+  - mcp__claude-in-chrome__read_console_messages # Check for JS errors
+  - mcp__claude-in-chrome__read_network_requests # Check for failed requests
+  - mcp__claude-in-chrome__resize_window        # Test responsive breakpoints
+  - mcp__claude-in-chrome__gif_creator          # Record visual evidence
+  - mcp__claude-in-chrome__get_page_text        # Get page text content
+  - mcp__claude-in-chrome__find                 # Find elements on page
+  - mcp__claude-in-chrome__computer             # Browser interaction
+  - mcp__claude-in-chrome__javascript_tool      # Execute JS for verification
+  - mcp__claude-in-chrome__shortcuts_execute    # Execute browser shortcuts
+  - mcp__claude-in-chrome__shortcuts_list       # List available shortcuts
+  - mcp__claude-in-chrome__switch_browser       # Switch browser context
+  - mcp__claude-in-chrome__form_input           # Interact with forms for testing
+  - mcp__claude-in-chrome__upload_image         # Upload image for verification
+  - mcp__claude-in-chrome__update_plan          # Update verification plan
+restricted_tools:
+  - Write          # Law NEVER writes code
+  - Edit           # Law NEVER edits code
+  - NotebookEdit   # Law NEVER edits notebooks
+  - Agent          # Law does not launch other agents
+notes: |
+  Law uses Bash for executing curl commands, docker commands, and database migrations
+  ONLY for verification purposes. Law NEVER uses Bash to write, create, or modify files.
+  Law NEVER writes application code, fixes bugs, or implements anything.
+  Law ONLY verifies and reports PASS or FAIL with structured details.

@@ -1,0 +1,20 @@
+# Robin — Research & Specs tools
+agent: robin
+allowed_tools:
+  - Read           # Read files for codebase analysis
+  - Glob           # Find files by pattern
+  - Grep           # Search code for patterns and dependencies
+  - Write          # ONLY for spec documents and analysis reports
+  - WebSearch      # Research libraries and technologies
+  - WebFetch       # Fetch documentation and resources
+restricted_tools:
+  - Edit           # Robin NEVER edits application code
+  - Bash           # Robin NEVER runs commands
+  - Agent          # Robin NEVER orchestrates other agents
+  - NotebookEdit   # Robin NEVER edits notebooks
+  - TaskCreate     # Robin NEVER manages tasks
+  - TaskUpdate     # Robin NEVER manages tasks
+notes: |
+  Robin uses Write ONLY for spec files, analysis reports, and API contracts.
+  Robin NEVER writes application code, configuration, tests, or implementation artifacts.
+  All research findings and specs are delivered to Luffy for coordination.

@@ -1,0 +1,19 @@
+# Zoro — Backend Engineer tools
+agent: zoro
+allowed_tools:
+  - Read           # Read files for context and analysis
+  - Write          # Create new implementation files
+  - Edit           # Modify existing code files
+  - Bash           # Run server, execute curls, stack CLI commands (dotnet, go, uvicorn, etc.)
+  - Glob           # Find files in project structure
+  - Grep           # Search code for patterns, imports, dependencies
+restricted_tools:
+  - Agent          # Zoro does not orchestrate other agents
+  - NotebookEdit   # Zoro does not work with notebooks
+  - WebSearch      # Zoro does not search the web
+  - WebFetch       # Zoro does not fetch web pages
+notes: |
+  Zoro uses Bash to run backend servers, execute curl commands, run stack-specific CLIs
+  (dotnet run, go run, uvicorn, python manage.py), and generate Swagger docs (swag init, etc.).
+  Zoro NEVER writes frontend code, database migrations, or test suites.
+  Zoro ALWAYS generates Swagger/OpenAPI docs and curl commands for every endpoint.

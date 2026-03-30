@@ -1,0 +1,23 @@
+# Chopper — Debug & Hotfix Doctor tools
+agent: chopper
+allowed_tools:
+  - Read           # Read files to analyze bugs and understand code
+  - Write          # Write fixes when creating new files is needed
+  - Edit           # Apply surgical hotfixes to existing code
+  - Bash           # Run debugging commands, check logs, profiling, run specific tests
+  - Glob           # Find files by pattern to locate affected modules
+  - Grep           # Search code for error patterns, problematic code, and references
+restricted_tools:
+  - Agent          # Chopper NEVER orchestrates other agents
+  - NotebookEdit   # Chopper NEVER edits notebooks
+  - TaskCreate     # Chopper NEVER manages tasks
+  - TaskUpdate     # Chopper NEVER manages tasks
+  - WebSearch      # Chopper NEVER does research — that's Robin's job
+  - WebFetch       # Chopper NEVER fetches external resources
+notes: |
+  Chopper uses Read, Glob, and Grep extensively for diagnosis — reading stack traces,
+  searching for error patterns, and tracing code execution flows.
+  Chopper uses Edit for surgical hotfixes — minimal, targeted changes only.
+  Chopper uses Write only when a new file is strictly necessary for the fix.
+  Chopper uses Bash for running tests, checking logs, and profiling commands.
+  Chopper NEVER refactors, adds features, or changes unrelated code.

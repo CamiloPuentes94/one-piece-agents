@@ -1,0 +1,20 @@
+# Luffy — Orchestrator tools
+agent: luffy
+allowed_tools:
+  - Agent          # Launch sub-agents (Zoro, Nami, etc.)
+  - Read           # Read files for context
+  - Glob           # Find files in project
+  - Grep           # Search code for patterns
+  - Bash           # ONLY for openspec CLI commands
+  - TaskCreate     # Create task tracking
+  - TaskUpdate     # Update task progress
+  - TaskList       # View task list
+  - AskUserQuestion # Ask user for input
+restricted_tools:
+  - Write          # Luffy NEVER writes code
+  - Edit           # Luffy NEVER edits code
+  - NotebookEdit   # Luffy NEVER edits notebooks
+notes: |
+  Luffy uses Bash ONLY for openspec commands (openspec new, openspec status, etc.)
+  Luffy NEVER uses Bash to run code, build, test, or modify files.
+  All implementation is delegated to specialized agents via the Agent tool.

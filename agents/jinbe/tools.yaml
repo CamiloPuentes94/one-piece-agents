@@ -1,0 +1,19 @@
+# Jinbe — Security & Code Quality tools
+agent: jinbe
+allowed_tools:
+  - Read           # Read files for security analysis and code review
+  - Bash           # Run read-only commands (dependency checks, version lookups)
+  - Glob           # Find files by pattern to identify attack surface
+  - Grep           # Search code for vulnerability patterns and secrets
+restricted_tools:
+  - Write          # Jinbe NEVER writes files — he is a Verifier
+  - Edit           # Jinbe NEVER edits code — he only reviews and reports
+  - Agent          # Jinbe NEVER orchestrates other agents
+  - NotebookEdit   # Jinbe NEVER edits notebooks
+  - WebSearch      # Jinbe does not perform web research
+  - WebFetch       # Jinbe does not fetch external resources
+notes: |
+  Jinbe is a Verifier agent. He NEVER writes or modifies code.
+  He uses Read, Glob, and Grep to analyze code for security vulnerabilities.
+  He uses Bash only for read-only operations like checking dependency versions.
+  All findings are delivered to Luffy as a structured security report.

@@ -1,0 +1,21 @@
+# Usopp — Testing & Final Verification tools
+agent: usopp
+allowed_tools:
+  - Read           # Read specs, source code, and test files
+  - Write          # Write new test files
+  - Edit           # Edit existing test files
+  - Bash           # Execute test runners (dotnet test, go test, pytest, vitest/jest)
+  - Glob           # Discover test files and project structure
+  - Grep           # Search for coverage gaps and test patterns
+restricted_tools:
+  - Agent          # Usopp NEVER orchestrates other agents
+  - WebSearch      # Usopp NEVER searches the web
+  - WebFetch       # Usopp NEVER fetches external resources
+  - NotebookEdit   # Usopp NEVER edits notebooks
+  - TaskCreate     # Usopp NEVER manages tasks
+  - TaskUpdate     # Usopp NEVER manages tasks
+notes: |
+  Usopp uses Write and Edit ONLY for test files — never for application code.
+  Usopp uses Bash to run test suites and collect results.
+  Usopp uses Read to examine specs (WHEN/THEN scenarios) and source code for coverage analysis.
+  Usopp's verdict (APPROVED/REJECTED) is delivered to Luffy and gates the archive phase.

@@ -1,0 +1,21 @@
+# Franky — DevOps & Infrastructure tools
+agent: franky
+allowed_tools:
+  - Read           # Read existing configs, Dockerfiles, and project files
+  - Write          # Create Dockerfiles, compose files, CI/CD workflows, env configs
+  - Edit           # Modify existing infrastructure configurations
+  - Bash           # Run docker build, verify configs, execute infrastructure commands
+  - Glob           # Find project files and existing configurations
+  - Grep           # Search for patterns, ports, dependencies, and env variables
+restricted_tools:
+  - Agent          # Franky NEVER orchestrates other agents
+  - NotebookEdit   # Franky NEVER edits notebooks
+  - TaskCreate     # Franky NEVER manages tasks
+  - TaskUpdate     # Franky NEVER manages tasks
+  - WebSearch      # Franky does not do research — Robin handles that
+  - WebFetch       # Franky does not fetch external resources
+notes: |
+  Franky uses Bash primarily for verifying Docker builds and CI/CD configs.
+  Franky uses Write and Edit for Dockerfiles, docker-compose, GitHub Actions, and .env files.
+  Franky NEVER commits real secrets or .env files — only .env.example with documented variables.
+  All infrastructure work is received from and reported back to Luffy.
