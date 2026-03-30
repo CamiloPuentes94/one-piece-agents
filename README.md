@@ -146,7 +146,7 @@ openspec/
 
 ## Landing page
 
-[one-piece-agents.tu-dominio.com](https://one-piece-agents.tu-dominio.com) — documentación visual del sistema.
+[agents-one-piece.camandrefactory.com](https://agents-one-piece.camandrefactory.com) — documentación visual del sistema.
 
 ## Licencia
 
