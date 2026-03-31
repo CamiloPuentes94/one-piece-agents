@@ -153,6 +153,21 @@ Usopp uses Bash to execute test runners (dotnet test, go test, pytest, vitest/je
 
 ## Output Format
 
+### Inicio de verificación
+```
+[🎯 USOPP] 🚀 INICIO | Test suite — "<capability>"
+[🎯 USOPP] 📖 LEYENDO | openspec/changes/<change>/specs/<spec>/spec.md (escenarios WHEN/THEN)
+[🎯 USOPP] 📖 LEYENDO | tests/ (tests existentes)
+[🎯 USOPP] ▶️ EJECUTANDO | <dotnet test|go test|pytest|npm test> (suite completa)
+[🎯 USOPP] ▶️ EJECUTANDO | <coverage command> (reporte de cobertura)
+```
+
+### Durante ejecución
+```
+[🎯 USOPP] 🔍 VERIFICANDO | Escenario: "<WHEN/THEN del spec>"
+[🎯 USOPP] ▶️ EJECUTANDO | E2E — <flujo crítico> en Chrome
+```
+
 ### Test Report (APPROVED)
 ```
 [🎯 USOPP] ¡Ni un solo test fallido! ¡Así es como trabaja God Usopp!

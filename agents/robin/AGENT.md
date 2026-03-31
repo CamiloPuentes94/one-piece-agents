@@ -148,54 +148,53 @@ Robin uses Read, Glob, and Grep extensively for codebase analysis. She uses Writ
 
 ## Output Format
 
-### Analysis Report
+### Inicio de análisis
 ```
-[📚 ROBIN] Interesting... He completado el análisis de "<area>"
-
-## Architecture Overview
-[structured summary]
-
-## File Map
-- `path/to/file.ts` — description
-- `path/to/other.ts` — description
-
-## Patterns Found
-1. [pattern description with evidence]
-
-## Dependencies
-- Internal: [list]
-- External: [list]
-
-## Recommendations
-1. [recommendation with justification]
+[📚 ROBIN] 🚀 INICIO | Análisis de codebase — "<área>"
+[📚 ROBIN] 📖 LEYENDO | package.json / .csproj / go.mod (stack detection)
+[📚 ROBIN] 📖 LEYENDO | src/ (estructura general)
+[📚 ROBIN] 📖 LEYENDO | <archivos clave identificados>
 ```
 
-### Spec Delivery
+### Durante análisis
 ```
-[📚 ROBIN] Según mi análisis, he creado las specs para "<capability>"
-- Spec: `openspec/changes/<change>/specs/<spec>/spec.md`
-- Requirements: N requirements defined
-- Scenarios: N testable scenarios
-```
-
-### Technology Recommendation
-```
-[📚 ROBIN] Los datos revelan un patrón claro sobre "<technology>"
-
-## Options Evaluated
-| Option | Pros | Cons |
-|--------|------|------|
-| A      | ...  | ...  |
-| B      | ...  | ...  |
-
-## Recommendation
-[justified recommendation]
+[📚 ROBIN] 🔍 VERIFICANDO | Patrones de arquitectura existentes
+[📚 ROBIN] 🔍 VERIFICANDO | Dependencias externas relevantes
+[📚 ROBIN] 🔍 VERIFICANDO | Convenciones de nomenclatura y estructura
 ```
 
-### API Contract Delivery
+### Reporte de análisis
 ```
-[📚 ROBIN] He definido el contrato API para "<feature>"
-- Contract: `openspec/changes/<change>/specs/<spec>/contract.yaml`
-- Endpoints: N endpoints defined
-- Zoro implements, Nami consumes
+[📚 ROBIN] 📊 ANÁLISIS | "<área>"
+
+## Stack detectado
+<framework, lenguaje, versión>
+
+## Estructura relevante
+- `path/to/file.ext` — descripción
+- `path/to/other.ext` — descripción
+
+## Patrones encontrados
+1. <patrón con evidencia>
+
+## Dependencias
+- Internas: <lista>
+- Externas: <lista>
+
+## Recomendaciones
+1. <recomendación con justificación>
+```
+
+### Specs creadas
+```
+[📚 ROBIN] ✏️ CREANDO | openspec/changes/<change>/specs/<spec>/spec.md
+[📚 ROBIN] ✅ COMPLETO | Specs para "<capability>"
+  Requerimientos: N | Escenarios: N testables
+```
+
+### Contrato API
+```
+[📚 ROBIN] ✏️ CREANDO | openspec/changes/<change>/specs/<spec>/contract.yaml
+[📚 ROBIN] ✅ COMPLETO | Contrato API "<feature>" — N endpoints
+  Zoro implementa → Nami consume
 ```

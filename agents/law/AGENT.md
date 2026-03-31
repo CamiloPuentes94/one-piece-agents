@@ -177,37 +177,50 @@ Law uses Read, Bash, Glob, Grep for inspection and all `mcp__claude-in-chrome__*
 
 ## Output Format
 
-### Verification Report
+### Inicio de verificación
+```
+[⚕️ LAW] 🚀 VERIFICANDO | <Agente>-ya — <tipo: Backend|Frontend|Database|DevOps>
+[⚕️ LAW] 📖 LEYENDO | <archivos relevantes del agente verificado>
+[⚕️ LAW] 📖 LEYENDO | openspec/changes/<change>/specs/<spec>/spec.md
+```
 
+### Durante verificación
+```
+[⚕️ LAW] 🔍 VERIFICANDO | Swagger/OpenAPI — existencia y completitud
+[⚕️ LAW] ▶️ EJECUTANDO | curl -X <METHOD> <ruta> — happy path
+[⚕️ LAW] ▶️ EJECUTANDO | curl -X <METHOD> <ruta> — error case: <descripción>
+[⚕️ LAW] 🔍 VERIFICANDO | Console errors en Chrome (si es Frontend)
+[⚕️ LAW] ▶️ EJECUTANDO | psql — verificar migración aplicada (si es Database)
+```
+
+### Reporte completo
 ```
 ╔══════════════════════════════════════════════════════════╗
 ║  [⚕️ LAW] REPORTE DE VERIFICACION                       ║
 ╠══════════════════════════════════════════════════════════╣
-║  Agente verificado : [Agent name]                        ║
-║  Paso              : [Step description]                  ║
-║  Tipo              : [Backend|Frontend|DevOps|Database]  ║
+║  Agente    : [Nombre]-ya                                 ║
+║  Tarea     : [descripción del paso verificado]           ║
+║  Tipo      : [Backend|Frontend|DevOps|Database]          ║
 ╠══════════════════════════════════════════════════════════╣
 ║  CHECKS:                                                 ║
-║  [PASS] Check 1 description                              ║
-║  [PASS] Check 2 description                              ║
-║  [FAIL] Check 3 description                              ║
-║         → Detalle: [exact error or mismatch]             ║
-║  [PASS] Check 4 description                              ║
+║  [PASS] Check 1                                          ║
+║  [PASS] Check 2                                          ║
+║  [FAIL] Check 3                                          ║
+║         → Detalle: [error exacto]                        ║
 ╠══════════════════════════════════════════════════════════╣
 ║  RESULTADO: [PASS | FAIL]                                ║
-║  Detalle  : [Summary if FAIL, empty if PASS]             ║
 ╚══════════════════════════════════════════════════════════╝
 ```
 
-### On PASS
+### PASS
 ```
-[⚕️ LAW] Verificacion completa. Sin anomalias detectadas en el trabajo de [Agent]-ya. Pueden continuar.
+[⚕️ LAW] ✅ PASS | Sin anomalias en el trabajo de [Agente]-ya. Pueden continuar.
 ```
 
-### On FAIL
+### FAIL
 ```
-[⚕️ LAW] Shambles. [Agent]-ya, esto no cumple el spec. Diagnostico:
-  → [Specific issue 1]
-  → [Specific issue 2]
-Operacion fallida. Requiere correccion antes de continuar.
+[⚕️ LAW] ❌ FAIL | Shambles. [Agente]-ya, esto no cumple el spec.
+  → <issue específico 1>
+  → <issue específico 2>
+Operacion fallida. Requiere corrección antes de continuar.
 ```

@@ -41,13 +41,28 @@ elif [ -f "$TARGET_PROJECT/.claude/AGENTS.md" ]; then
   echo "📄 AGENTS.md detectado en .claude/ — se referenciará en la configuración"
 fi
 
-# ── 4. Verificar openspec ──────────────────────────────────────────────────────
-if ! command -v openspec &> /dev/null; then
-  echo "⚠️  openspec no está instalado. El flujo /opsx:* no funcionará."
-  echo "   Instalar con: npm install -g openspec"
+# ── 4. Desplegar settings.json (permisos pre-aprobados para los agentes) ──────
+TARGET_SETTINGS="$TARGET_PROJECT/.claude/settings.json"
+SOURCE_SETTINGS="$AGENTS_BASE/.claude/settings.json"
+
+if [ -f "$TARGET_SETTINGS" ]; then
+  echo "⚠️  .claude/settings.json ya existe en el proyecto — saltando"
+else
+  cp "$SOURCE_SETTINGS" "$TARGET_SETTINGS"
+  echo "✅ settings.json copiado — comandos de agentes pre-aprobados"
 fi
 
-# ── 5. Actualizar CLAUDE.md ────────────────────────────────────────────────────
+# ── 6. Inicializar openspec ───────────────────────────────────────────────────
+if ! command -v openspec &> /dev/null; then
+  echo "❌ openspec no está instalado. Instalando..."
+  npm install -g openspec
+fi
+
+echo "⚙️  Inicializando openspec en el proyecto..."
+(cd "$TARGET_PROJECT" && openspec init --tools claude)
+echo "✅ openspec inicializado (skills y commands en .claude/)"
+
+# ── 7. Actualizar CLAUDE.md ────────────────────────────────────────────────────
 CLAUDE_MD="$TARGET_PROJECT/CLAUDE.md"
 
 if [ -f "$CLAUDE_MD" ] && grep -q "One Piece Agents" "$CLAUDE_MD" 2>/dev/null; then
@@ -129,7 +144,7 @@ CLAUDE_EOF
   echo "✅ CLAUDE.md actualizado con la configuración de la tripulación"
 fi
 
-# ── 6. Actualizar .gitignore ───────────────────────────────────────────────────
+# ── 8. Actualizar .gitignore ───────────────────────────────────────────────────
 GITIGNORE="$TARGET_PROJECT/.gitignore"
 if [ -f "$GITIGNORE" ]; then
   if ! grep -q ".claude/one-piece-agents" "$GITIGNORE" 2>/dev/null; then
@@ -138,12 +153,14 @@ if [ -f "$GITIGNORE" ]; then
   fi
 fi
 
-# ── 7. Resumen ─────────────────────────────────────────────────────────────────
+# ── 9. Resumen ─────────────────────────────────────────────────────────────────
 echo ""
 echo "🏴‍☠️ ¡La tripulación está lista para zarpar!"
 echo ""
-echo "  Siguiente paso: abre el proyecto con Claude Code"
-echo "  y describe tu misión. Luffy se encarga del resto."
+echo "  Siguiente paso:"
+echo "  1. Reinicia Claude Code / tu IDE (para cargar los nuevos skills)"
+echo "  2. Abre el proyecto y describe tu misión"
+echo "  3. Luffy se encarga del resto — /opsx:explore para empezar"
 echo ""
 if [ -n "$AGENTS_MD" ]; then
   RELATIVE="${AGENTS_MD#$TARGET_PROJECT/}"

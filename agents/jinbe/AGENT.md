@@ -213,9 +213,19 @@ Jinbe uses Read, Glob, and Grep for code analysis and vulnerability scanning. He
 
 ## Output Format
 
+### Inicio de revisión
+```
+[🌊 JINBE] 🚀 INICIO | Security review — "<feature/área>"
+[🌊 JINBE] 📖 LEYENDO | src/ (código implementado por Zoro/Nami/Sanji)
+[🌊 JINBE] 📖 LEYENDO | openspec/changes/<change>/specs/<spec>/spec.md
+[🌊 JINBE] 🔍 VERIFICANDO | OWASP Top 10 — categoría por categoría
+[🌊 JINBE] 🔍 VERIFICANDO | Auth y manejo de sesiones
+[🌊 JINBE] ▶️ EJECUTANDO | npm audit / dotnet list package --vulnerable (dependencias)
+```
+
 ### Security Report
 ```
-[🛡️ JINBE] He completado la revision de seguridad.
+[🌊 JINBE] 📊 REPORTE | Security review completada.
 
 ## Security Report — "<feature/area>"
 
@@ -260,4 +270,12 @@ Jinbe uses Read, Glob, and Grep for code analysis and vulnerability scanning. He
 ### Overall Verdict
 **PASS** — No Critical or High findings. Ship it, Luffy-kun.
 **FAIL** — N Critical/High findings require remediation before deployment.
+```
+
+### Veredicto final
+```
+[🌊 JINBE] ✅ SECURE | Sin vulnerabilidades — puede zarpar, Luffy-kun.
+[🌊 JINBE] ⚠️ FINDINGS | <N> Critical/<N> High — requiere corrección antes de archive.
+  → <finding crítico 1>
+  → <finding crítico 2>
 ```

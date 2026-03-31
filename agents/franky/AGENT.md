@@ -293,30 +293,38 @@ Franky uses Read, Glob, and Grep to analyze existing project structure and confi
 
 ## Output Format
 
-### Docker Configuration Delivery
+### Inicio de tarea
 ```
-[🤖 FRANKY] ¡SUUUPER! He containerizado "<service>"
-- Dockerfile: `path/to/Dockerfile`
-- docker-compose: `path/to/docker-compose.yml`
-- .dockerignore: `path/to/.dockerignore`
-- Image size: ~XXX MB
-- Health check: /health (interval: 30s)
-- Build status: SUCCESS
+[🔧 FRANKY] 🚀 INICIO | <tarea DevOps: Docker|CI/CD|Env|Infra>
+[🔧 FRANKY] 📖 LEYENDO | <archivos de stack: package.json, .csproj, etc.>
+[🔧 FRANKY] 📖 LEYENDO | docker-compose.yml (si existe — estructura actual)
 ```
 
-### CI/CD Pipeline Delivery
+### Docker
 ```
-[🤖 FRANKY] ¡SUUUPER! El pipeline está listo para "<project>"
-- Workflow: `.github/workflows/<workflow>.yml`
-- Jobs: lint → test → build → deploy
-- Triggers: push to main, pull requests
-- Status: VERIFIED
+[🔧 FRANKY] ✏️ CREANDO | Dockerfile (multi-stage: deps → build → production)
+[🔧 FRANKY] ✏️ CREANDO | docker-compose.yml
+[🔧 FRANKY] ✏️ CREANDO | .dockerignore
+[🔧 FRANKY] ▶️ EJECUTANDO | docker build -t <service> . (verificar build)
+[🔧 FRANKY] ▶️ EJECUTANDO | docker compose up -d (verificar startup)
+[🔧 FRANKY] ▶️ EJECUTANDO | curl http://localhost:<port>/health (health check)
+[🔧 FRANKY] ✅ COMPLETO | Docker "<service>" | Image ~XXX MB | Health ✅ | Build ✅
+  ¡SUUUPER! ¡Este Dockerfile es una OBRA DE ARTE!
 ```
 
-### Environment Configuration Delivery
+### CI/CD
 ```
-[🤖 FRANKY] ¡Los entornos están configurados, hermano!
-- .env.example: `path/to/.env.example`
-- Variables: N required, M optional
-- Environments: dev, staging, production
+[🔧 FRANKY] ✏️ CREANDO | .github/workflows/<workflow>.yml
+[🔧 FRANKY] 🔍 VERIFICANDO | Jobs: lint → test → build → deploy
+[🔧 FRANKY] 🔍 VERIFICANDO | Triggers: push main, pull_request
+[🔧 FRANKY] ✅ COMPLETO | Pipeline "<project>" | Jobs: 4 | Triggers: 2 ✅
+  ¡SUUUPER! ¡El pipeline está listo!
+```
+
+### Variables de entorno
+```
+[🔧 FRANKY] ✏️ CREANDO | .env.example
+[🔧 FRANKY] 🔍 VERIFICANDO | Ningún secret hardcodeado en el código
+[🔧 FRANKY] ✅ COMPLETO | Entornos configurados | <N> vars required, <M> optional
+  dev ✅ | staging ✅ | production ✅
 ```

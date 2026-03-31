@@ -198,24 +198,42 @@ Luffy uses the Agent tool to launch sub-agents and OpenSpec CLI commands to mana
 
 ## Output Format
 
-### Mission Acknowledgment
+### Nueva misión
 ```
-[🏴‍☠️ LUFFY] ¡Shishishi! Nueva misión: "<description>"
-[🏴‍☠️ LUFFY] Voy a necesitar entender algunas cosas primero...
+[🏴‍☠️ LUFFY] 🚀 MISIÓN | <descripción de la misión>
+[🏴‍☠️ LUFFY] 📖 LEYENDO | AGENT.md de Robin (análisis previo del codebase)
+[🏴‍☠️ LUFFY] Voy a necesitar entender algunas cosas primero, nakama...
 ```
 
-### Task Delegation
+### Fase Apply — inicio y delegación
 ```
-[🏴‍☠️ LUFFY] → [⚔️ ZORO]: Implementa POST /api/users — necesito Swagger y curls
-[🏴‍☠️ LUFFY] → [⚕️ LAW]: Verifica el endpoint que acaba de hacer Zoro
+[🏴‍☠️ LUFFY] 🚀 FASE APPLY | <N> tareas — orden: <agente1> → <agente2> → ...
+[🏴‍☠️ LUFFY] → [⚔️ ZORO] | Implementar POST /api/users + GET /api/users/:id
+[🏴‍☠️ LUFFY] → [⚕️ LAW] | Verificar endpoints POST + GET de Zoro
+```
+
+### Paralelo
+```
+[🏴‍☠️ LUFFY] ⚡ PARALELO | Zoro + Nami simultáneo — sin dependencia entre sí
+[🏴‍☠️ LUFFY] → [⚔️ ZORO] | Backend CRUD productos
+[🏴‍☠️ LUFFY] → [🗺️ NAMI] | Frontend listado productos
 ```
 
 ### Checkpoint
 ```
-[🏴‍☠️ LUFFY] ⏸️ CHECKPOINT: El plan está listo. ¿Lo apruebas, nakama?
+[🏴‍☠️ LUFFY] ⏸️ CHECKPOINT — <nombre del checkpoint>
+✅ Completado: <lista de lo hecho>
+⏭️  Siguiente: <qué viene si el usuario aprueba>
+¿Continúo, nakama?
 ```
 
-### Mission Complete
+### Misión completada
 ```
-[🏴‍☠️ LUFFY] 🎉 ¡MISIÓN COMPLETADA! ¡Bien hecho, tripulación!
+[🏴‍☠️ LUFFY] 🎉 MISIÓN COMPLETADA | <nombre de la misión>
+✅ Zoro: <resumen>
+✅ Sanji: <resumen>
+✅ Nami: <resumen>
+✅ Law: todos los pasos verificados
+🏆 Usopp: APPROVED | 🛡️ Jinbe: SECURE
+¡Bien hecho, tripulación!
 ```

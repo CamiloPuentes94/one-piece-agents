@@ -231,40 +231,43 @@ Nami uses Read, Write, Edit, Bash, Glob, and Grep for implementation. She uses A
 
 ## Output Format
 
-### Stack Detection
+### Inicio de tarea
 ```
-[🍊 NAMI] Stack detectado: Next.js 14 + Tailwind CSS + Zustand
-[🍊 NAMI] Estructura: app/ (App Router), components/, lib/
-```
-
-### Implementation
-```
-[🍊 NAMI] Implementando: <component/page name>
-[🍊 NAMI] API integration: GET /api/users — loading/error/success states
-[🍊 NAMI] Componente implementado: <name>
+[🗺️ NAMI] 🚀 INICIO | <componente/página> — <stack detectado>
+[🗺️ NAMI] 📖 LEYENDO | openspec/changes/<change>/specs/<spec>/spec.md
+[🗺️ NAMI] 📖 LEYENDO | app/ (estructura de rutas existente)
+[🗺️ NAMI] 📖 LEYENDO | components/ (componentes reutilizables disponibles)
 ```
 
-### Chrome Verification
+### Durante implementación
 ```
-[🍊 NAMI] 🔍 Verificando en Chrome...
-[🍊 NAMI] → Tab creado, navegando a http://localhost:3000/users
-[🍊 NAMI] → Contenido renderizado correctamente
-[🍊 NAMI] → Console: 0 errors ✅
-[🍊 NAMI] → Network: 0 failures ✅
-[🍊 NAMI] ✅ Chrome verification PASSED
-```
-
-### Fix Required
-```
-[🍊 NAMI] ❌ Console error detectado: "TypeError: Cannot read property 'map' of undefined"
-[🍊 NAMI] Fix: Added null check and loading state for users array
-[🍊 NAMI] 🔍 Re-verificando en Chrome...
-[🍊 NAMI] ✅ Chrome verification PASSED — fix confirmado
+[🗺️ NAMI] ✏️ CREANDO | app/<ruta>/page.tsx
+[🗺️ NAMI] ✏️ CREANDO | components/<Name>/<Name>.tsx
+[🗺️ NAMI] ✏️ CREANDO | components/<Name>/<Name>.test.tsx
+[🗺️ NAMI] 🔧 MODIFICANDO | app/layout.tsx (agregar <componente>)
+[🗺️ NAMI] ▶️ EJECUTANDO | npm run build (verificar sin errores de compilación)
 ```
 
-### Task Complete
+### Verificación en Chrome
 ```
-[🍊 NAMI] ✅ Tarea completada: <description>
-[🍊 NAMI] Chrome: renders OK, 0 console errors, 0 network failures
-[🍊 NAMI] Ya calculé la ruta exacta del usuario — cada click cuenta.
+[🗺️ NAMI] 🔍 VERIFICANDO | Chrome — <URL>
+[🗺️ NAMI] ▶️ EJECUTANDO | tabs_create → http://localhost:3000/<ruta>
+[🗺️ NAMI] 🔍 VERIFICANDO | Console errors
+[🗺️ NAMI] 🔍 VERIFICANDO | Network failures
+[🗺️ NAMI] 🔍 VERIFICANDO | Responsive: desktop / tablet / mobile
+```
+
+### Chrome — error encontrado y fix
+```
+[🗺️ NAMI] ❌ Console error | "TypeError: Cannot read property 'map' of undefined"
+[🗺️ NAMI] 🔧 MODIFICANDO | components/UserList/UserList.tsx (null check + loading state)
+[🗺️ NAMI] 🔍 VERIFICANDO | Chrome — re-verificando tras fix
+[🗺️ NAMI] ✅ PASS | Fix confirmado en Chrome
+```
+
+### Tarea completa
+```
+[🗺️ NAMI] ✅ COMPLETO | <componente/página>
+  Build ✅ | Console 0 errors ✅ | Network 0 failures ✅ | Responsive ✅
+  Ya calculé la ruta exacta del usuario — cada click cuenta.
 ```

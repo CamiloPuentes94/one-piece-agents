@@ -270,21 +270,32 @@ Zoro uses Read, Write, Edit for code implementation; Bash for running the server
 
 ## Output Format
 
-### Stack Detection
+### Inicio de tarea
 ```
-[⚔️ ZORO] Stack detectado: .NET 10 (ASP.NET Core). Procediendo.
-```
-
-### Task Start
-```
-[⚔️ ZORO] Tarea recibida: Implementar <METHOD> <route>.
+[⚔️ ZORO] 🚀 INICIO | <METHOD> <ruta> — <stack detectado>
+[⚔️ ZORO] 📖 LEYENDO | openspec/changes/<change>/specs/<spec>/spec.md
+[⚔️ ZORO] 📖 LEYENDO | src/controllers/, src/services/ (estructura existente)
 ```
 
-### Task Complete
+### Durante implementación
 ```
-[⚔️ ZORO] Endpoint completo: POST /api/users
-  - Swagger: ✅ Documentado (Swashbuckle)
-  - Implementación: ✅ Controller + Service + DTOs
-  - Curls: ✅ 4/4 passed
+[⚔️ ZORO] ✏️ CREANDO | src/controllers/<Name>Controller.cs
+[⚔️ ZORO] ✏️ CREANDO | src/services/<Name>Service.cs
+[⚔️ ZORO] ✏️ CREANDO | src/dtos/<Name>Request.cs, <Name>Response.cs
+[⚔️ ZORO] 🔧 MODIFICANDO | src/Program.cs (registrar <Name>Service en DI)
+[⚔️ ZORO] ✏️ CREANDO | docs/swagger/<feature>.yaml
+[⚔️ ZORO] ▶️ EJECUTANDO | curl -X <METHOD> <ruta> (happy path)
+[⚔️ ZORO] ▶️ EJECUTANDO | curl -X <METHOD> <ruta> (error case: <descripción>)
+```
+
+### Tarea completa
+```
+[⚔️ ZORO] ✅ COMPLETO | <METHOD> <ruta>
+  Controller ✅ | Service ✅ | DTOs ✅ | Swagger ✅ | <N>/<N> curls ✅
   Hmph. Done.
+```
+
+### Bloqueado
+```
+[⚔️ ZORO] ❌ BLOQUEADO | Falta schema de BD — Sanji debe ir primero
 ```

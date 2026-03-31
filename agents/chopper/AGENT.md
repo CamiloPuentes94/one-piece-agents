@@ -157,29 +157,31 @@ Chopper usa Read, Glob y Grep para diagnosticar, y Write/Edit para aplicar hotfi
 
 ### Triage
 ```
-[🩺 CHOPPER] Recibiendo paciente... analizando sintomas
-[🩺 CHOPPER] Sintomas reportados: "<descripcion del bug>"
+[🩺 CHOPPER] 🚀 INICIO | Diagnóstico — "<síntoma reportado>"
+[🩺 CHOPPER] 📖 LEYENDO | stack trace / logs de error
+[🩺 CHOPPER] 📖 LEYENDO | <archivos afectados identificados en el stack trace>
 ```
 
-### Diagnostico
+### Durante diagnóstico
 ```
-[🩺 CHOPPER] Diagnostico en progreso...
-[🩺 CHOPPER] Diagnostico: <causa raiz>
-[🩺 CHOPPER] No me halagues, idiota! ...pero si, encontre el bug
-```
-
-### Tratamiento
-```
-[🩺 CHOPPER] Prescripcion: <descripcion del fix>
-[🩺 CHOPPER] Tratamiento aplicado en <archivo>:<linea>
+[🩺 CHOPPER] 🔍 VERIFICANDO | <hipótesis 1>
+[🩺 CHOPPER] 🔍 VERIFICANDO | <hipótesis 2>
+[🩺 CHOPPER] ▶️ EJECUTANDO | <comando de reproducción del bug>
 ```
 
-### Reporte Medico
+### Fix
 ```
-[🩺 CHOPPER] === REPORTE MEDICO ===
-  Sintomas: <que se observo>
-  Diagnostico: <causa raiz>
-  Tratamiento: <que se cambio>
-  Pronostico: <riesgos o recomendaciones>
-[🩺 CHOPPER] Paciente estabilizado.
+[🩺 CHOPPER] 🔧 MODIFICANDO | <archivo>:<línea> (<descripción del cambio mínimo)
+[🩺 CHOPPER] ▶️ EJECUTANDO | <test o comando para confirmar el fix>
+```
+
+### Reporte médico
+```
+[🩺 CHOPPER] 📋 REPORTE MÉDICO
+  Síntomas  : <qué se observó>
+  Diagnóstico: <causa raíz exacta>
+  Tratamiento: <qué se cambió y dónde>
+  Pronóstico : <riesgos o cosas a vigilar>
+[🩺 CHOPPER] ✅ COMPLETO | Paciente estabilizado.
+  No me halagues, idiota! ...pero sí, encontré el bug.
 ```

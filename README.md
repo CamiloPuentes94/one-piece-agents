@@ -7,13 +7,15 @@ Sistema multi-agente temático de One Piece para desarrollo de software completo
 En lugar de hablar directamente con un LLM para programar, describes tu misión a **Luffy** (el orquestador) y él coordina a la tripulación completa:
 
 - Robin analiza el codebase y redacta las specs
-- Zoro implementa el backend con Swagger y curls
-- Sanji diseña y migra la base de datos
+- Zoro implementa el backend con Swagger y curls verificados
+- Sanji diseña el schema y las migraciones
 - Nami implementa el frontend y lo verifica en Chrome
-- Law verifica cada paso antes de continuar
+- Law verifica cada paso antes de continuar al siguiente
 - Usopp y Jinbe hacen la verificación final antes de archivar
 
 Todo bajo el flujo **OpenSpec**: `explore → propose → apply → verify → archive`.
+
+Cada agente anuncia en tiempo real lo que está haciendo: qué archivos lee, qué crea, qué comandos ejecuta.
 
 ## Tripulación
 
@@ -24,7 +26,7 @@ Todo bajo el flujo **OpenSpec**: `explore → propose → apply → verify → a
 | ⚔️ **Zoro** | Backend | .NET 10 (principal), Go, FastAPI, Django |
 | 🍳 **Sanji** | Database | PostgreSQL + PostGIS siempre |
 | 🗺️ **Nami** | Frontend | React 19, Next.js, Astro |
-| 🎵 **Brook** | UX & Accesibilidad | WCAG 2.1 AA, i18n, copy en español |
+| 🎵 **Brook** | UX & Accesibilidad | WCAG 2.1 AA, i18n, copy |
 | 🔧 **Franky** | DevOps | Docker multi-stage, GitHub Actions |
 | ⚕️ **Law** | Verificador continuo | Verifica cada paso de cada agente |
 | 🌊 **Jinbe** | Seguridad | OWASP Top 10, revisión completa |
@@ -34,38 +36,65 @@ Todo bajo el flujo **OpenSpec**: `explore → propose → apply → verify → a
 ## Instalación
 
 ```bash
-# Clonar este repo una sola vez en tu máquina
+# 1. Clonar este repo una sola vez en tu máquina
 git clone https://github.com/CamiloPuentes94/one-piece-agents.git
 
-# Integrar en cualquier proyecto existente
+# 2. Integrar en cualquier proyecto existente
 ./one-piece-agents/setup.sh /ruta/a/tu-proyecto
 ```
 
-El script:
-- Crea el symlink `.claude/one-piece-agents` → `agents/` de este repo
-- Detecta si el proyecto ya tiene `AGENTS.md` y lo referencia sin reemplazarlo
-- Agrega la sección de la tripulación al `CLAUDE.md` del proyecto sin borrar el contenido existente
-- Agrega el symlink al `.gitignore` automáticamente
+El script hace todo automáticamente:
 
-### Requisitos
+| Paso | Qué hace |
+|------|----------|
+| Symlink | `.claude/one-piece-agents` → `agents/` de este repo |
+| Permisos | Despliega `settings.json` — sin prompts de permiso en Claude Code |
+| OpenSpec | Corre `openspec init --tools claude` — instala los 11 skills y commands |
+| `CLAUDE.md` | Agrega la sección de la tripulación sin borrar lo existente |
+| `AGENTS.md` | Si el proyecto tiene uno, lo detecta y lo referencia |
+| `.gitignore` | Agrega el symlink automáticamente |
+
+> Si `openspec` no está instalado, el script lo instala con `npm install -g openspec`.
+
+### Requisito único
 
 ```bash
-npm install -g openspec          # CLI para el flujo /opsx:*
 npm install -g @anthropic-ai/claude-code  # Claude Code CLI
 ```
 
 ## Uso
 
-Abre tu proyecto con Claude Code y describe tu misión. Luffy inicia el flujo completo:
+Abre tu proyecto con Claude Code y describe tu misión:
 
 ```
 Tú:   "Necesito un sistema de autenticación con JWT para mi API en .NET 10"
 
-Luffy: ¡Shishishi! ¡Nueva misión, nakama! Antes de armar el plan, necesito
-       entender algunas cosas...
-       1. ¿Los usuarios se registran en el sistema o vienen de un IdP externo?
-       2. ¿Necesitas refresh tokens o solo access tokens?
-       3. ¿Hay roles o permisos? ¿Cuáles?
+Luffy: [🏴‍☠️ LUFFY] 🚀 MISIÓN | Auth con JWT — .NET 10
+       ¡Shishishi! Antes de armar el plan, nakama...
+       1. ¿Registro propio o IdP externo (Google, Azure AD)?
+       2. ¿Necesitas refresh tokens?
+       3. ¿Hay roles o permisos?
+```
+
+Los agentes reportan en tiempo real mientras trabajan:
+
+```
+[🏴‍☠️ LUFFY] → [🍳 SANJI] | Schema: tabla users + tabla sessions
+[🍳 SANJI] 🚀 INICIO | Schema users + sessions — PostgreSQL + PostGIS
+[🍳 SANJI] 📖 LEYENDO | openspec/changes/auth/specs/users/spec.md
+[🍳 SANJI] ✏️ CREANDO | migrations/20260330_create_users.sql
+[🍳 SANJI] ▶️ EJECUTANDO | psql — aplicando migración UP
+[🍳 SANJI] ✅ COMPLETO | Migración lista — UP/DOWN verificados
+[🏴‍☠️ LUFFY] → [⚕️ LAW] | Verificar migración de Sanji
+[⚕️ LAW] ✅ PASS | Schema correcto, migración ejecuta sin errores
+[🏴‍☠️ LUFFY] → [⚔️ ZORO] | Implementar POST /api/auth/login
+[⚔️ ZORO] 🚀 INICIO | POST /api/auth/login — .NET 10 ASP.NET Core
+[⚔️ ZORO] 📖 LEYENDO | src/controllers/, src/services/
+[⚔️ ZORO] ✏️ CREANDO | src/controllers/AuthController.cs
+[⚔️ ZORO] ✏️ CREANDO | src/services/AuthService.cs
+[⚔️ ZORO] ▶️ EJECUTANDO | curl POST /api/auth/login (happy path)
+[⚔️ ZORO] ▶️ EJECUTANDO | curl POST /api/auth/login (credenciales inválidas)
+[⚔️ ZORO] ✅ COMPLETO | Controller ✅ | Swagger ✅ | 3/3 curls ✅
 ```
 
 ### Comandos disponibles
@@ -87,21 +116,21 @@ Luffy: ¡Shishishi! ¡Nueva misión, nakama! Antes de armar el plan, necesito
 └──────────────────────────┬──────────────────────────────┘
                            │
                     🏴‍☠️ LUFFY
-                 (orquestador)
+                    (orquestador)
                            │
           ┌────────────────┼────────────────┐
           │                │                │
       📚 Robin         ⚔️ Zoro          🍳 Sanji
-     (specs)          (backend)        (database)
+      (specs)          (backend)        (database)
           │                │                │
           └────────────────┼────────────────┘
                            │
-                    ⚕️ LAW verifica cada paso
+              ⚕️ LAW verifica cada paso
                            │
           ┌────────────────┼────────────────┐
           │                                 │
       🌊 Jinbe                          🎯 Usopp
-    (seguridad)                        (tests)
+    (seguridad)                         (tests)
           │                                 │
           └────────────────┬────────────────┘
                            │
@@ -134,10 +163,13 @@ agents/
 ├── usopp/
 ├── chopper/
 └── shared/
-    ├── logging.md          → Prefijos de log por agente
+    ├── logging.md          → Protocolo de comunicación en tiempo real
     ├── openspec-flow.md    → Referencia del flujo de 5 fases
     ├── stack-detection.md  → Detección automática de tech stack
     └── agent-schema.md     → Estructura estándar de AGENT.md
+
+.claude/
+└── settings.json           → Permisos pre-aprobados (se despliega via setup.sh)
 
 openspec/
 ├── specs/          → Specs activas del sistema
@@ -146,7 +178,7 @@ openspec/
 
 ## Landing page
 
-[agents-one-piece.camandrefactory.com](https://agents-one-piece.camandrefactory.com) — documentación visual del sistema.
+[agents-one-piece.camandrefactory.com](https://agents-one-piece.camandrefactory.com)
 
 ## Licencia
 

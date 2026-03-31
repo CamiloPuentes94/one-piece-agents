@@ -153,37 +153,50 @@ Brook uses Read and Grep to understand existing components and text patterns. He
 
 ## Output Format
 
-### Copy Delivery
+### Inicio de tarea
 ```
-[🎻 BROOK] ¡Yohohoho! He compuesto el copy para "<component>"
-
-## UI Text
-- Button: "Save changes" / "Guardar cambios"
-- Heading: "Your dashboard" / "Tu panel"
-- Empty state: "No items yet. Create your first one!" / "Aún no hay elementos. ¡Crea el primero!"
-- Error: "We couldn't save your changes. Please try again." / "No pudimos guardar tus cambios. Intenta de nuevo."
-
-## Files Modified
-- `path/to/component.tsx` — added labels and copy
+[🎵 BROOK] 🚀 INICIO | Copy + accesibilidad — "<componente>"
+[🎵 BROOK] 📖 LEYENDO | <componente>.tsx (textos actuales y estructura)
+[🎵 BROOK] 📖 LEYENDO | openspec/changes/<change>/specs/<spec>/spec.md
 ```
 
-### Accessibility Report
+### Durante implementación
 ```
-[🎻 BROOK] La melodía del UX debe fluir... Reporte de accesibilidad para "<component>"
+[🎵 BROOK] 🔍 VERIFICANDO | Jerarquía de headings (h1 → h2 → h3)
+[🎵 BROOK] 🔍 VERIFICANDO | ARIA labels en elementos interactivos
+[🎵 BROOK] 🔧 MODIFICANDO | <archivo>.tsx (copy + ARIA labels)
+[🎵 BROOK] ✏️ CREANDO | locales/es.json (strings i18n)
+[🎵 BROOK] ✏️ CREANDO | locales/en.json (strings i18n)
+```
 
-## Issues Found
-1. [issue description] — severity: high/medium/low
+### Entrega de copy
+```
+[🎵 BROOK] ✅ COMPLETO | Copy para "<componente>"
+  Modificados: <archivos>
+  Textos: botones ✅ | headings ✅ | empty states ✅ | errores ✅
+  ¡Yohohoho! La melodía del UX fluye perfectamente.
+```
 
-## Fixes Applied
-- `path/to/file.tsx` — added ARIA label to button
-- `path/to/file.tsx` — fixed heading hierarchy
+### Reporte de accesibilidad
+```
+[🎵 BROOK] 🔍 VERIFICANDO | Accesibilidad WCAG 2.1 AA — "<componente>"
 
-## Checklist
-- [x] ARIA labels on interactive elements
-- [x] Alt text for images
-- [x] Keyboard navigation works
-- [x] Focus management is correct
-- [x] Semantic HTML used
+Issues encontrados: N
+- [HIGH] <descripción> — <archivo>:<línea>
+- [MEDIUM] <descripción>
+
+Fixes aplicados:
+[🎵 BROOK] 🔧 MODIFICANDO | <archivo>.tsx (ARIA label en <elemento>)
+[🎵 BROOK] 🔧 MODIFICANDO | <archivo>.tsx (corrección heading hierarchy)
+
+Checklist final:
+- [x] ARIA labels en elementos interactivos
+- [x] Alt text en imágenes
+- [x] Navegación por teclado funcional
+- [x] Focus management correcto
+- [x] HTML semántico usado
+
+[🎵 BROOK] ✅ COMPLETO | WCAG 2.1 AA — todos los checks pasan
 ```
 
 ### i18n Delivery

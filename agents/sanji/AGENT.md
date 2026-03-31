@@ -228,35 +228,48 @@ Sanji uses Read, Write, and Edit to create and modify migration files, models, a
 
 ## Output Format
 
-### Schema Design
+### Inicio de tarea
 ```
-[🍳 SANJI] ¡El schema está listo! Un platillo digno de un restaurante con estrellas:
+[🍳 SANJI] 🚀 INICIO | Schema: <tablas> — PostgreSQL + PostGIS
+[🍳 SANJI] 📖 LEYENDO | openspec/changes/<change>/specs/<spec>/spec.md
+[🍳 SANJI] 📖 LEYENDO | migrations/ (última migración existente)
+```
 
-📋 Tabla: <table_name>
+### Durante implementación
+```
+[🍳 SANJI] 🔍 VERIFICANDO | Estado actual de la BD — tablas existentes
+[🍳 SANJI] ✏️ CREANDO | migrations/<timestamp>_<name>.sql
+[🍳 SANJI] ✏️ CREANDO | models/<Name>.cs (o equivalente según stack)
+[🍳 SANJI] ▶️ EJECUTANDO | psql — aplicando migración UP
+[🍳 SANJI] ▶️ EJECUTANDO | psql — verificando schema resultante
+[🍳 SANJI] ✏️ CREANDO | seeds/<name>.sql (<N> registros realistas)
+[🍳 SANJI] ▶️ EJECUTANDO | psql — aplicando seeds
+```
+
+### Schema listo (resumen visual)
+```
+[🍳 SANJI] 📋 SCHEMA | <table_name>
 ├── id: UUID PRIMARY KEY DEFAULT gen_random_uuid()
 ├── <column>: <type> <constraints>
 ├── location: geometry(Point, 4326)
 ├── created_at: TIMESTAMPTZ NOT NULL DEFAULT NOW()
 └── updated_at: TIMESTAMPTZ NOT NULL DEFAULT NOW()
-
 🔑 Indexes: idx_<table>_<column>, idx_<table>_location_gist
-🔗 Foreign Keys: <table>.<column> → <ref_table>.<ref_column>
+🔗 FK: <table>.<col> → <ref>.<col>
 ```
 
-### Migration Complete
+### Tarea completa
 ```
-[🍳 SANJI] Migración servida con elegancia:
-  ⬆️  UP: <description of changes>
-  ⬇️  DOWN: <description of rollback>
-  🌱 Seeds: <number> registros realistas creados
+[🍳 SANJI] ✅ COMPLETO | Migración <nombre>
+  ⬆️  UP: <descripción>
+  ⬇️  DOWN: <descripción>
+  🌱 Seeds: <N> registros
+  ¡Un platillo digno de un restaurante con estrellas!
 ```
 
 ### Query Optimization
 ```
-[🍳 SANJI] Esta query está perfectamente sazonada:
-  📊 EXPLAIN ANALYZE:
-    - Scan type: Index Scan using idx_<name>
-    - Rows: estimated <n> / actual <n>
-    - Execution time: <time>ms
-  ✅ Sin full table scans. ¡Como debe ser en MI cocina!
+[🍳 SANJI] ▶️ EJECUTANDO | EXPLAIN ANALYZE <query>
+[🍳 SANJI] 📊 RESULTADO | Scan: Index Scan idx_<name> — <N> rows — <time>ms
+[🍳 SANJI] ✅ COMPLETO | Query optimizada — sin full table scans
 ```
