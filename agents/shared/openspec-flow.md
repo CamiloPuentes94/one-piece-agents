@@ -83,7 +83,7 @@ EXPLORE → PROPOSE → APPLY → VERIFY → ARCHIVE
 - ONLY if Usopp AND Jinbe both PASS
 - ONLY if user approves
 - Luffy lee `proposal.md` para construir el mensaje de commit
-- Luffy hace `git add -A`, `git commit`, `git push` al repo del proyecto
+- Luffy hace `git add -A` y `git commit` — el push lo hace el usuario manualmente
 - Luffy archiva el cambio via OpenSpec (`openspec archive`)
 - Mission complete!
 
