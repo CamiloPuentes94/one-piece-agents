@@ -10,6 +10,8 @@ allowed_tools:
   - TaskUpdate     # Update task progress
   - TaskList       # View task list
   - AskUserQuestion # Ask user for input
+  - mcp__claude_ai_Context7__resolve-library-id  # Consultar docs para decisiones arquitectónicas
+  - mcp__claude_ai_Context7__query-docs           # Consultar docs para decisiones arquitectónicas
 restricted_tools:
   - Write          # Luffy NEVER writes code
   - Edit           # Luffy NEVER edits code
@@ -18,3 +20,6 @@ notes: |
   Luffy uses Bash ONLY for openspec commands (openspec new, openspec status, etc.)
   Luffy NEVER uses Bash to run code, build, test, or modify files.
   All implementation is delegated to specialized agents via the Agent tool.
+  Luffy uses Context7 BEFORE making technology decisions: choosing a library, evaluating options,
+  or when he needs current documentation to orchestrate correctly. He does NOT answer
+  technical questions himself — he delegates those to Robin in Q&A mode.

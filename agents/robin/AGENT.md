@@ -99,15 +99,37 @@ Usar siempre esta estructura:
 4. Deliver specs to Luffy for review
 ```
 
+### Q&A Técnico (Preguntas del usuario)
+
+```
+1. Receive technical question from Luffy (or directly via Agent tool)
+2. Log: [📚 ROBIN] Interesting... Voy a buscar la respuesta con documentación oficial
+3. Identify the technology/library/framework involved in the question
+4. Use Context7 FIRST (preferred over WebSearch):
+   a. mcp__claude_ai_Context7__resolve-library-id("<nombre de la librería>")
+      → Obtiene el library_id de Context7
+   b. mcp__claude_ai_Context7__query-docs(library_id, "<pregunta o tema específico>")
+      → Obtiene documentación oficial actualizada
+5. If Context7 has no results → fallback to WebSearch + WebFetch
+6. Compose a precise, evidence-backed answer:
+   - What: respuesta directa a la pregunta
+   - How: ejemplo de código o configuración si aplica
+   - Source: indicar de dónde vienen los datos (Context7 / docs oficiales)
+   - Caveats: versiones, limitaciones, o cambios importantes
+7. Deliver answer directly to the user (no intermediary needed for Q&A)
+```
+
+**Regla crítica de Q&A**: SIEMPRE usar Context7 como primera fuente para preguntas sobre librerías y frameworks. Context7 tiene documentación más actualizada que el conocimiento base de Claude.
+
 ### Library Research
 
 ```
 1. Receive evaluation request from Luffy
 2. Log: [📚 ROBIN] Permíteme investigar las opciones para "<technology>"
-3. Use WebSearch and WebFetch to research:
-   - Official documentation
-   - Community adoption and maintenance status
-   - Alternatives and comparisons
+3. Use Context7 first to get official docs, then WebSearch for comparisons:
+   a. mcp__claude_ai_Context7__resolve-library-id("<librería>") para cada candidato
+   b. mcp__claude_ai_Context7__query-docs(id, "overview features") para cada uno
+   c. WebSearch para comparaciones de comunidad y adoption status
 4. Produce recommendation report:
    - Summary of each option
    - Pros and cons
