@@ -49,29 +49,44 @@ EXPLORE → PROPOSE → APPLY → VERIFY → ARCHIVE
 **What happens:**
 - Luffy reads tasks.md and assigns each task to the correct agent
 - Agents work on their tasks (parallel when independent, sequential when dependent)
-- AFTER EVERY STEP: Luffy launches Law to verify
+- AFTER EVERY STEP: Luffy launches Law to verify (SÍNCRONO — bloquea la tarea hasta PASS)
   - Backend steps: Law runs curls, checks Swagger
   - Frontend steps: Law opens Chrome, checks console/network/responsive
   - Database steps: Law runs migrations, verifies seeds
   - DevOps steps: Law checks Docker build/compose/health
-- If Law reports FAIL: Luffy assigns fix to original agent or Chopper
-- If Law reports PASS: Luffy moves to next task
+- Law es SÍNCRONO: la siguiente tarea NO arranca hasta que Law emita PASS
+- If Law reports FAIL (1st time): Luffy sends back to original agent for fix + re-verifies
+- If Law reports FAIL (2nd consecutive time): Luffy escalates to Chopper + re-verifies
+- If Law reports FAIL (3rd time): Luffy STOPS and escalates to user
+- If Law reports PASS: Luffy marks task complete and moves to next task
+- Luffy usa TaskCreate/TaskUpdate para que el usuario vea el progreso en tiempo real
 
 **Exit criteria:** All tasks complete, all Law verifications passed
 
 ### 4. VERIFY (Usopp + Jinbe)
 
-**Who:** Usopp (testing), Jinbe (security) — run in parallel
+**Who:** Usopp (testing), Jinbe (security) — run in PARALLEL
 
 **What happens:**
+- Luffy lanza Usopp y Jinbe SIMULTÁNEAMENTE (dos Agent tool calls en el mismo mensaje)
 - Usopp runs the complete test suite (unit, integration, E2E)
-- Usopp verifies implementation against spec scenarios
-- Jinbe performs security review (OWASP, auth, dependencies)
-- Both produce structured reports
+- Usopp verifies implementation against spec scenarios (WHEN/THEN)
+- Usopp writes missing tests when coverage gaps found
+- Jinbe performs security review (OWASP Top 10, auth, dependencies)
+- Both produce structured reports with explicit verdicts
 
-**Exit criteria:** Both Usopp AND Jinbe report PASS
+**Veredictos requeridos:**
+- Usopp: `APPROVED` (todos los tests pasan, cobertura OK) o `REJECTED` (fallos o cobertura baja)
+- Jinbe: `SECURE` (sin hallazgos críticos) o `FINDINGS` (hallazgos por severidad)
 
-**Checkpoint:** ⏸️ Luffy pauses and asks user to review results before archiving
+**Condición para ARCHIVE:** Usopp = APPROVED **Y** Jinbe = SECURE (AMBOS, no uno solo)
+
+**Si Usopp REJECTED:** Luffy asigna fixes → re-lanza AMBOS (los fixes pueden afectar security)
+**Si Jinbe FINDINGS:** Luffy asigna security fixes → re-lanza AMBOS (los fixes pueden romper tests)
+
+**Exit criteria:** Usopp = APPROVED AND Jinbe = SECURE
+
+**Checkpoint:** ⏸️ Luffy pauses, presenta reportes completos de ambos, y pregunta al usuario antes de archive
 
 ### 5. ARCHIVE (Luffy)
 
@@ -101,17 +116,26 @@ EXPLORE → PROPOSE → APPLY → VERIFY → ARCHIVE
 ## Dependency Flow Between Agents
 
 ```
-Robin (specs) ──→ Zoro (backend) ──→ Law (verify) ──→ next task
-                  Sanji (database) ─→ Law (verify) ──→ next task
-Robin (specs) ──→ Nami (frontend) ──→ Law (verify) ──→ next task
-                  Brook (copy) ──────→ Law (verify) ──→ next task
-                  Franky (devops) ───→ Law (verify) ──→ next task
+PROPOSE:
+  Robin (specs + data model + API contract) ──→ Luffy (tasks.md con agentes asignados)
+  [Franky: setup básico si proyecto nuevo]
 
-After all apply tasks:
-  Usopp (testing) ──→ ┐
-  Jinbe (security) ──→ ├──→ Luffy (archive)
-                       │
-  Both must PASS ──────┘
+APPLY (con Law verificando cada paso, SÍNCRONO):
+  Robin (spec) ──→ Sanji (database schema) ──→ Law (verify) ──→ PASS
+                       ↓ (schema confirmado)
+  Robin (spec) ──→ Zoro (backend endpoints) ──→ Law (verify) ──→ PASS
+                   Nami (frontend) ─────────→ Law (verify) ──→ PASS  (paralelo a Zoro si no hay dep API)
+                   Brook (copy+a11y, post-Nami) → Law (verify) ──→ PASS
+                   Franky (devops, post-stack) ──→ Law (verify) ──→ PASS
+
+  Si Law FAIL → agente original (1er fallo) → Chopper (2do fallo) → usuario (3er fallo)
+
+VERIFY (paralelo):
+  Usopp (testing) ──→ APPROVED ──→ ┐
+  Jinbe (security) ──→ SECURE ────→ ├──→ Luffy solicita aprobación → ARCHIVE
+                                     │
+  AMBOS deben pasar ────────────────┘
+  Si uno falla → fix → re-lanzar AMBOS
 ```
 
 ## Rules

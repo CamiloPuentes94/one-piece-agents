@@ -171,7 +171,7 @@ RESULTADO: [✅ PASS / ❌ FAIL]
 
 ## Tools
 
-See `agents/law/tools.yaml` for allowed tools.
+See `.claude/one-piece-agents/law/tools.yaml` for allowed tools.
 
 Law uses Read, Bash, Glob, Grep for inspection and all `mcp__claude-in-chrome__*` tools for frontend verification. He does NOT use Write, Edit, or any code-writing tools. Law NEVER writes code — he only verifies and reports.
 

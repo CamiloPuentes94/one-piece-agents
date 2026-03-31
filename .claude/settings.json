@@ -25,8 +25,10 @@
       "Bash(cat:*)",
       "Bash(grep:*)",
       "Bash(ls:*)",
-      "Bash(for:*)",
-      "Read(**)"
+      "Bash(find:*)",
+      "Read(**)",
+      "Write(**)",
+      "Edit(**)"
     ]
   }
 }

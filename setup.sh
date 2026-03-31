@@ -49,10 +49,10 @@ if [ -f "$TARGET_SETTINGS" ]; then
   echo "⚠️  .claude/settings.json ya existe en el proyecto — saltando"
 else
   cp "$SOURCE_SETTINGS" "$TARGET_SETTINGS"
-  echo "✅ settings.json copiado — comandos de agentes pre-aprobados"
+  echo "✅ settings.json copiado — Read/Write/Edit y comandos de agentes pre-aprobados"
 fi
 
-# ── 6. Inicializar openspec ───────────────────────────────────────────────────
+# ── 5. Inicializar openspec ───────────────────────────────────────────────────
 if ! command -v openspec &> /dev/null; then
   echo "❌ openspec no está instalado. Instalando..."
   npm install -g openspec
@@ -61,6 +61,16 @@ fi
 echo "⚙️  Inicializando openspec en el proyecto..."
 (cd "$TARGET_PROJECT" && openspec init --tools claude)
 echo "✅ openspec inicializado (skills y commands en .claude/)"
+
+# ── 6. Desplegar comandos One Piece (override de los genéricos de openspec) ────
+COMMANDS_SOURCE="$AGENTS_BASE/agents/commands/opsx"
+COMMANDS_TARGET="$TARGET_PROJECT/.claude/commands/opsx"
+
+if [ -d "$COMMANDS_SOURCE" ]; then
+  mkdir -p "$COMMANDS_TARGET"
+  cp "$COMMANDS_SOURCE"/*.md "$COMMANDS_TARGET/"
+  echo "✅ Comandos One Piece desplegados — /opsx:explore, propose, apply, verify, archive"
+fi
 
 # ── 7. Actualizar CLAUDE.md ────────────────────────────────────────────────────
 CLAUDE_MD="$TARGET_PROJECT/CLAUDE.md"
@@ -82,12 +92,32 @@ La tripulación One Piece se complementa con esas reglas — no las reemplaza.
     AGENTS_MD_BLOCK=""
   fi
 
+  # Escribir el bloque principal con activación de Luffy
   cat >> "$CLAUDE_MD" << CLAUDE_EOF
 
 # One Piece Agents — Tripulación Activa 🏴‍☠️
 
-Los agentes están disponibles en \`.claude/one-piece-agents/\`. Cada agente tiene un \`AGENT.md\` con su system prompt completo y un \`tools.yaml\` con sus herramientas permitidas.
-$AGENTS_MD_BLOCK
+## INSTRUCCIÓN CRÍTICA — ACTIVACIÓN DE LA TRIPULACIÓN
+
+**Esta instrucción aplica SOLO cuando el usuario humano inicia una conversación.**
+**Si eres un sub-agente lanzado por Luffy: sigue el prompt que recibiste e ignora este bloque.**
+
+Cuando el usuario describa una misión, un feature, un bug o cualquier trabajo de desarrollo:
+
+1. **Lee** \`.claude/one-piece-agents/luffy/AGENT.md\` — eres Luffy, el orquestador
+2. **Lee** \`.claude/one-piece-agents/shared/openspec-flow.md\` — las 5 fases del flujo
+3. **Lee** \`.claude/one-piece-agents/shared/logging.md\` — formato de logs obligatorio
+4. **Adopta el rol de Luffy** y ejecuta el flujo OpenSpec
+
+**Nota de rutas**: Todos los archivos de los agentes están en \`.claude/one-piece-agents/\`.
+
+**Invocación de sub-agentes (Agent tool)**: El prompt de cada sub-agente SIEMPRE debe iniciar con:
+\`\`\`
+Lee \`.claude/one-piece-agents/<nombre>/AGENT.md\` para tus instrucciones completas.
+\`\`\`
+${AGENTS_MD_BLOCK}
+---
+
 ## Orquestador: Luffy
 
 Describe tu misión y Luffy coordina todo el flujo:
@@ -126,11 +156,11 @@ Describe tu misión y Luffy coordina todo el flujo:
 ## Comandos disponibles
 
 \`\`\`
-/opsx:explore   → Iniciar exploración con Luffy como interrogador
-/opsx:propose   → Crear el plan completo (proposal, specs, design, tasks)
-/opsx:apply     → Implementar con los agentes especializados
-/opsx:verify    → Verificación final con Usopp y Jinbe
-/opsx:archive   → Archivar el cambio completado
+/opsx:explore   → Luffy en modo INTERROGADOR — explorar la misión
+/opsx:propose   → Luffy crea el plan completo (proposal, specs, design, tasks)
+/opsx:apply     → Luffy delega a la tripulación — agentes implementan, Law verifica
+/opsx:verify    → Usopp + Jinbe en paralelo — verificación final
+/opsx:archive   → Archive con git commit — solo si todo aprobado
 /opsx:ff        → Fast-forward: todos los artefactos de una vez
 \`\`\`
 
@@ -141,7 +171,7 @@ Describe tu misión y Luffy coordina todo el flujo:
 - \`.claude/one-piece-agents/shared/\` — Reglas compartidas (logging, flujo, stacks)
 CLAUDE_EOF
 
-  echo "✅ CLAUDE.md actualizado con la configuración de la tripulación"
+  echo "✅ CLAUDE.md actualizado con instrucción de activación y configuración de la tripulación"
 fi
 
 # ── 8. Actualizar .gitignore ───────────────────────────────────────────────────
@@ -157,8 +187,14 @@ fi
 echo ""
 echo "🏴‍☠️ ¡La tripulación está lista para zarpar!"
 echo ""
+echo "  Lo que se instaló:"
+echo "  ✅ .claude/one-piece-agents/  → symlink a los 11 agentes"
+echo "  ✅ .claude/settings.json      → permisos pre-aprobados (Read/Write/Edit + Bash)"
+echo "  ✅ .claude/commands/opsx/     → comandos One Piece (explore/propose/apply/verify/archive)"
+echo "  ✅ CLAUDE.md                  → instrucción de activación de Luffy"
+echo ""
 echo "  Siguiente paso:"
-echo "  1. Reinicia Claude Code / tu IDE (para cargar los nuevos skills)"
+echo "  1. Reinicia Claude Code (para cargar los nuevos skills y commands)"
 echo "  2. Abre el proyecto y describe tu misión"
 echo "  3. Luffy se encarga del resto — /opsx:explore para empezar"
 echo ""

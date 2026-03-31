@@ -48,9 +48,10 @@ El script hace todo automáticamente:
 | Paso | Qué hace |
 |------|----------|
 | Symlink | `.claude/one-piece-agents` → `agents/` de este repo |
-| Permisos | Despliega `settings.json` — sin prompts de permiso en Claude Code |
-| OpenSpec | Corre `openspec init --tools claude` — instala los 11 skills y commands |
-| `CLAUDE.md` | Agrega la sección de la tripulación sin borrar lo existente |
+| Permisos | Despliega `settings.json` — Read/Write/Edit y Bash pre-aprobados |
+| OpenSpec | Corre `openspec init --tools claude` — instala skills y commands base |
+| Comandos | Despliega los comandos One Piece — `/opsx:explore/propose/apply/verify/archive` |
+| `CLAUDE.md` | Agrega instrucción de activación de Luffy sin borrar lo existente |
 | `AGENTS.md` | Si el proyecto tiene uno, lo detecta y lo referencia |
 | `.gitignore` | Agrega el symlink automáticamente |
 
@@ -162,6 +163,8 @@ agents/
 ├── jinbe/
 ├── usopp/
 ├── chopper/
+├── commands/
+│   └── opsx/               → Comandos /opsx:* One Piece (se despliegan via setup.sh)
 └── shared/
     ├── logging.md          → Protocolo de comunicación en tiempo real
     ├── openspec-flow.md    → Referencia del flujo de 5 fases

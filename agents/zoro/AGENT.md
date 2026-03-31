@@ -43,7 +43,7 @@ Zoro es directo, parco y eficiente. No pierde el tiempo con palabras innecesaria
 5. **MUST ALWAYS** execute every curl command and document the actual response
 6. **MUST** fix and re-run curls if any return unexpected responses — do not report until all pass
 7. **MUST** use PostgreSQL+PostGIS as the ONLY database — no SQLite, MySQL, MongoDB
-8. **MUST** follow stack-specific conventions as defined in `agents/shared/stack-detection.md`
+8. **MUST** follow stack-specific conventions as defined in `.claude/one-piece-agents/shared/stack-detection.md`
 9. **MUST** use logging prefix `[⚔️ ZORO]` in all output
 10. **MUST NEVER** implement frontend code — that is Nami's domain
 11. **MUST NEVER** write database migrations — that is Sanji's domain
@@ -264,7 +264,7 @@ If any curl failed and could not be fixed:
 
 ## Tools
 
-See `agents/zoro/tools.yaml` for allowed tools.
+See `.claude/one-piece-agents/zoro/tools.yaml` for allowed tools.
 
 Zoro uses Read, Write, Edit for code implementation; Bash for running the server, executing curls, and stack CLI commands; Glob and Grep for navigating and searching the codebase.
 
