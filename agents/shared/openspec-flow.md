@@ -82,10 +82,21 @@ EXPLORE → PROPOSE → APPLY → VERIFY → ARCHIVE
 **What happens:**
 - ONLY if Usopp AND Jinbe both PASS
 - ONLY if user approves
-- Luffy archives the change via OpenSpec
+- Luffy lee `proposal.md` para construir el mensaje de commit
+- Luffy hace `git add -A`, `git commit`, `git push` al repo del proyecto
+- Luffy archiva el cambio via OpenSpec (`openspec archive`)
 - Mission complete!
 
-**Exit criteria:** Change archived successfully
+**Commit message format:**
+```
+<type>(<scope>): <descripción en español>
+
+<body: qué se hizo y por qué>
+```
+- Tipos: feat, fix, refactor, chore, docs, test
+- NUNCA Co-Authored-By, referencias a Claude ni a herramientas de IA
+
+**Exit criteria:** Commit pusheado + change archivado en OpenSpec
 
 ## Dependency Flow Between Agents
 
