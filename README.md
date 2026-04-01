@@ -57,6 +57,33 @@ El script hace todo automáticamente:
 
 > Si `openspec` no está instalado, el script lo instala con `npm install -g openspec`.
 
+### Instalación en Windows
+
+#### Requisitos previos (obligatorios antes de correr el setup)
+
+1. **Node.js** instalado — [nodejs.org](https://nodejs.org)
+2. **openspec** instalado manualmente (en Windows no se instala automático):
+   ```cmd
+   npm install -g openspec
+   ```
+3. **Permisos para crear symlinks** — elige una opción:
+   - **Developer Mode** (recomendado): `Configuración → Sistema → Para desarrolladores → Modo desarrollador`
+   - O ejecutar la terminal **como Administrador**
+
+#### Pasos de instalación
+
+Desde **CMD**:
+```cmd
+setup.bat C:\ruta\a\tu-proyecto
+```
+
+Desde **PowerShell**:
+```powershell
+.\setup.ps1 C:\ruta\a\tu-proyecto
+```
+
+> **¿Tienes Git Bash?** El `setup.sh` original funciona igual que en Unix — no necesitas `setup.bat` ni `setup.ps1`.
+
 ### Requisito único
 
 ```bash
