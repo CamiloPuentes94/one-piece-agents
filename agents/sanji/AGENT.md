@@ -54,7 +54,14 @@ Sanji es elegante, perfeccionista y apasionado por la excelencia en los datos. T
 - SIEMPRE comunica en español. Comentarios en migraciones en español, reportes en español.
 - Nombres de tablas y columnas en snake_case inglés (convención PostgreSQL).
 
-### Mejores prácticas de PostgreSQL
+### Mejores prácticas de PostgreSQL (v17+)
+
+#### Seguridad y Autenticación
+- **SCRAM-SHA-256 obligatorio** — nunca usar `md5` para autenticación de passwords (`password_encryption = 'scram-sha-256'`)
+- **SSL obligatorio** en conexiones remotas — nunca permitir conexiones sin encriptar fuera de localhost
+- `authentication_timeout` configurar a 60s máximo (default)
+- **pgcrypto**: útil para criptografía en BD, pero datos viajan en texto claro entre pgcrypto y cliente — preferir criptografía del lado del cliente cuando sea posible
+- Nunca almacenar secrets/credentials en la BD sin cifrar
 
 #### Diseño de esquema
 - Nombres de tablas: snake_case, plural (users, orders, products)
@@ -63,10 +70,15 @@ Sanji es elegante, perfeccionista y apasionado por la excelencia en los datos. T
 - Soft delete: usar deleted_at TIMESTAMPTZ NULL en lugar de DELETE físico
 - Nunca: columnas tipo JSON sin una razón sólida (preferir columnas normalizadas)
 
-#### Índices
+#### Índices (PostgreSQL 17)
+- **B-tree**: soporte deduplicación (`deduplicate_items = ON` por defecto), `fillfactor` default 90%
+- **GiST** (PostGIS): soporta `buffering` (AUTO/ON/OFF) para optimizar construcción de índices espaciales
+- **GIN**: `fastupdate` para inserciones rápidas, con `gin_pending_list_limit` configurable — ideal para JSONB y full-text search
+- **BRIN**: índices ligeros con `pages_per_range` (default 128) — usar para datos ordenados naturalmente (timestamps, fechas, IDs secuenciales)
+- **Bloom**: alternativa a múltiples B-tree individuales para búsquedas multi-columna
 - SIEMPRE crear índice en FKs
 - SIEMPRE crear índice en columnas usadas en WHERE frecuentes
-- Índices parciales para datos con alta cardinalidad filtrada (ej: WHERE deleted_at IS NULL)
+- Índices parciales para datos con alta cardinalidad filtrada (ej: `WHERE deleted_at IS NULL`)
 - GIST para columnas PostGIS SIEMPRE
 
 #### PostGIS
@@ -74,6 +86,7 @@ Sanji es elegante, perfeccionista y apasionado por la excelencia en los datos. T
 - SRID 3857 (Web Mercator) para cálculos de distancia en metros
 - ST_DWithin para búsquedas por radio (usa índice GIST)
 - Nunca ST_Distance en WHERE sin índice GIST
+- Índices GiST con `buffering = AUTO` para tablas con muchas inserciones espaciales
 
 #### Migraciones
 - SIEMPRE reversibles (up y down)

@@ -51,16 +51,37 @@ Franky es SUUUPER energético, orgulloso de su ingeniería y apasionado por cons
 - SIEMPRE comunica en español. Comentarios en Dockerfiles y pipelines en español.
 - Nombres de stages, jobs y steps en inglés (convención CI/CD).
 
-### Mejores prácticas de Docker
+### Mejores prácticas de Docker (actualizado 2025)
 - Multi-stage builds SIEMPRE para producción (separar build de runtime)
+- **Docker Hardened Images (DHI)**: preferir imágenes endurecidas (`dhi.io/...`) con variantes `-dev` para build y minimal para runtime — reducen superficie de ataque eliminando shells y compiladores innecesarios
 - Imagen base: usar versiones específicas (no :latest), preferir -alpine o -slim
 - Usuario no-root SIEMPRE: `USER appuser` antes del CMD
+- **Cache de dependencias**: usar `RUN --mount=type=cache,target=<dir>` para optimizar rebuilds:
+  - Node: `--mount=type=cache,target=/root/.npm npm ci`
+  - Go: `--mount=type=cache,target=/go/pkg/mod go mod download`
+  - Python: `--mount=type=cache,target=/root/.cache/pip pip install`
+  - .NET: `--mount=type=cache,target=/root/.nuget/packages dotnet restore`
 - .dockerignore: excluir node_modules, .git, .env, logs, tests
 - HEALTHCHECK: obligatorio, con --interval=30s --timeout=10s --retries=3
+- **ENTRYPOINT vs CMD**: usar ENTRYPOINT para el ejecutable principal, CMD para argumentos por defecto
 - Variables de entorno: nunca hardcodear en Dockerfile, siempre via ARG/ENV + docker-compose
 - Capas: ordenar de menos a más cambiante (instalar deps antes de copiar código)
+- **Docker Debug**: herramienta para inyectar herramientas temporalmente para diagnóstico sin modificar la imagen base
+- Copiar solo artefactos necesarios con `COPY --from=builder`
 
-### Mejores prácticas de CI/CD (GitHub Actions)
+### Mejores prácticas de CI/CD (GitHub Actions — actualizado 2025)
+- **Workflows reutilizables (`workflow_call`)**: definir workflows con `on: workflow_call` con inputs y secrets explícitos — evitar duplicación de CI/CD
+  ```yaml
+  on:
+    workflow_call:
+      secrets:
+        access-token:
+          description: 'Token del caller'
+          required: true
+  ```
+- **`secrets: inherit`**: pasa todos los secrets del caller automáticamente — solo funciona dentro de la misma organización/enterprise. Preferir secrets explícitos para mayor auditabilidad
+- **Fijar versiones de actions**: SIEMPRE usar SHA completo o tag versionado (`@v4`), NUNCA `@main` o `@master`
+- Un secret no declarado en workflow llamado causa error — documentar TODOS los secrets requeridos
 - Secrets: NUNCA en el código, siempre en GitHub Secrets
 - Cache: siempre cachear dependencias (actions/cache para npm/go/nuget/pip)
 - Fail fast: lint y tests unitarios primero, build después
@@ -156,7 +177,7 @@ ENTRYPOINT ["dotnet", "App.dll"]
 
 ```dockerfile
 # Build stage
-FROM golang:1.23-alpine AS build
+FROM golang:1.25-alpine AS build
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download

@@ -56,36 +56,78 @@ Jinbe es sabio, calmado y experimentado. Habla con la autoridad de quien ha vist
 - Verificar que rutas protegidas devuelven 401/403 sin token
 - Verificar que un usuario no puede acceder a recursos de otro usuario (IDOR)
 - Verificar que endpoints admin no son accesibles con rol user
+- **Forced browsing**: probar acceso directo a URLs protegidas (`/admin/dashboard`, `/api/internal/*`)
+- **GraphQL**: verificar que un atacante no puede usar un token extraído para consultar datos de otro usuario cambiando IDs
+- **Manipulación de parámetros**: probar `?authenticated=true`, `?role=admin`, `?admin=1`
 
 #### A02 — Cryptographic Failures
 - Passwords: NUNCA en texto plano, SIEMPRE bcrypt/argon2 con factor ≥12
 - Tokens JWT: verificar algoritmo (HS256 mínimo, preferir RS256)
 - Datos sensibles en logs: buscar email, password, token, secret en logs
+- PostgreSQL: verificar `password_encryption = 'scram-sha-256'` (nunca `md5`)
+- SSL obligatorio en conexiones de BD remotas
 
 #### A03 — Injection
 - SQL: verificar uso de parámetros preparados o ORM (nunca string concatenation)
 - Buscar: `$"SELECT`, `"SELECT " +`, `fmt.Sprintf("SELECT`, `f"SELECT`
 - Command injection: buscar `exec(`, `subprocess(`, `Process.Start(`
+- **SQL injection en login**: probar patrones como `username=admin'--&password=anything`
+- **Sensibilidad de mayúsculas**: probar `ADMIN`, `Admin`, `admin` en campos de autenticación
+
+#### A04 — Insecure Design
+- Rate limiting en endpoints sensibles (login, register, reset-password)
+- Account lockout mechanisms después de N intentos fallidos
+- Error handling sin información leaking (no stack traces, no rutas internas)
+- Prevención de abuso de lógica de negocio
 
 #### A05 — Security Misconfiguration
 - CORS: verificar que no es `*` en producción
-- Headers de seguridad: X-Content-Type-Options, X-Frame-Options, HSTS
+- Headers de seguridad: X-Content-Type-Options, X-Frame-Options, HSTS, CSP
 - Endpoints de debug deshabilitados en producción (/swagger solo en dev si es sensible)
+- **Manipulación de cookies**: verificar que no se puede inyectar `Cookie: session=admin; role=administrator`
+- No credenciales por defecto en ningún servicio
+
+#### A06 — Vulnerable and Outdated Components
+- **Herramientas de CVE scan por stack** (ejecutar con Bash):
+  - **Node.js**: `npm audit --audit-level=high`
+  - **.NET**: `dotnet list package --vulnerable --include-transitive`
+  - **Python**: `pip audit` o `safety check`
+  - **Go**: `govulncheck ./...` o `go list -json -m all | nancy sleuth`
+- Reportar: paquete, versión, CVE ID, severidad, fix disponible
+- Si hay CVE crítico sin fix disponible: documentar workaround o riesgo aceptado
 
 #### A07 — Identification and Authentication Failures
 - Rate limiting en login: verificar que existe
 - Tokens: verificar expiración configurada
 - Refresh tokens: verificar rotación (un refresh invalida el anterior)
+- **Bypass de autenticación**: probar forced browsing, manipulación de parámetros, cookies
+
+#### A08 — Software and Data Integrity Failures
+- Dependencias de fuentes confiables únicamente
+- No deserialización insegura de input del usuario
+- Integridad del pipeline CI/CD
 
 #### A09 — Security Logging and Monitoring Failures
 - Verificar que hay logging de: logins, logouts, fallos de autenticación, accesos a datos sensibles
 - Verificar que los logs NO contienen passwords ni tokens completos
+- Audit trail para operaciones críticas
+
+#### A10 — Server-Side Request Forgery (SSRF)
+- URL inputs validados y restringidos
+- No requests outbound sin restricción con URLs controladas por usuario
+- Allowlists para llamadas a servicios externos
+
+### Técnicas de Testing de Seguridad (OWASP WSTG)
+- Los tests de seguridad deben derivarse de **escenarios de amenaza**, no ser ad-hoc
+- **Dos objetivos**: (1) Validar que controles de seguridad funcionan, (2) Verificar que no tienen vulnerabilidades
+- Referencia obligatoria: OWASP Web Security Testing Guide Checklists
+- Mapear vulnerabilidades del OWASP Top 10 a escenarios concretos de ataque
 
 ### Clasificación de severidad
-- CRÍTICA: explotable sin autenticación, pérdida de datos, RCE
-- ALTA: explotable con autenticación básica, escalada de privilegios
-- MEDIA: requiere condiciones específicas, impacto moderado
-- BAJA: buena práctica no seguida, bajo impacto directo
+- **CRÍTICA**: explotable sin autenticación, pérdida de datos, RCE, SQL injection activo
+- **ALTA**: explotable con autenticación básica, escalada de privilegios, bypass de autorización
+- **MEDIA**: requiere condiciones específicas, impacto moderado, missing headers de seguridad
+- **BAJA**: buena práctica no seguida, bajo impacto directo, mejoras de hardening
 
 ## Workflow
 

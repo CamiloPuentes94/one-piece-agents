@@ -17,36 +17,43 @@ Before implementing, dev agents MUST detect the project's tech stack by examinin
 
 #### .NET 10 (Principal)
 - Framework: ASP.NET Core 10
-- Structure: Controllers/, Services/, Models/, DTOs/
-- ORM: Entity Framework Core
-- Swagger: Swashbuckle.AspNetCore or NSwag
+- **Patrón moderno**: Minimal APIs con `app.MapGet()` + `TypedResults` (preferido para APIs nuevas)
+- **Patrón clásico**: Controllers/, Services/, Models/, DTOs/ (para proyectos existentes)
+- ORM: Entity Framework Core con Npgsql + NetTopologySuite para PostGIS
+- Swagger: **NSwag** (recomendado) — `AddEndpointsApiExplorer()` + `AddOpenApiDocument()` + `UseOpenApi()` + `UseSwaggerUi()`
 - Migrations: `dotnet ef migrations add`, `dotnet ef database update`
 - Run: `dotnet run`, `dotnet watch`
-- Test: `dotnet test` (xUnit or NUnit)
+- Test: `dotnet test` (xUnit) + `WebApplicationFactory<Program>` para integration tests
 
-#### Go
+#### Go (1.25+)
 - Structure: cmd/, internal/, pkg/, api/
-- Router: gin, fiber, chi, or net/http
+- Router: `http.NewServeMux()` (stdlib), gin, fiber, chi
+- HTTP: `&http.Server{Addr: ":8080", Handler: mux}` + early return en cada error
 - Swagger: swaggo/swag with annotations
 - Migrations: golang-migrate or goose
 - Run: `go run .`
-- Test: `go test ./...`
+- Test: `go test ./...` con table-driven tests + `t.Parallel()`
+- Security: `govulncheck ./...` para escaneo de CVEs
 
 #### FastAPI
 - Structure: app/, routers/, models/, schemas/
-- ORM: SQLAlchemy + Alembic
-- Swagger: Built-in at /docs (auto-generated from Pydantic models)
+- ORM: SQLAlchemy + Alembic + GeoAlchemy2 (PostGIS)
+- **Pydantic v2** obligatorio: `response_model` en cada endpoint para validación automática
+- Swagger: Built-in at /docs (auto-generated from Pydantic models) — usar `tags`, `summary`, `description`, `responses`
 - Migrations: `alembic revision --autogenerate`, `alembic upgrade head`
 - Run: `uvicorn app.main:app --reload`
-- Test: `pytest`
+- Test: `pytest` + `TestClient(app)` (sin servidor real)
+- Security: `pip audit` o `safety check` para CVEs
 
 #### Django
 - Structure: apps/, models.py, views.py, serializers.py, urls.py
-- API: Django REST Framework
-- Swagger: drf-spectacular
+- API: Django REST Framework — `ModelViewSet` para CRUD, `APIView` para endpoints complejos
+- Routing: `DefaultRouter` para URLs automáticas + `@action` para endpoints custom
+- Swagger: drf-spectacular con `@extend_schema`
+- ORM: Django ORM + `django.contrib.gis` para PostGIS (GeoDjango)
 - Migrations: `python manage.py makemigrations`, `python manage.py migrate`
 - Run: `python manage.py runserver`
-- Test: `python manage.py test` or `pytest`
+- Test: `python manage.py test` or `pytest` + `APITestCase`
 
 ## Frontend Detection
 
@@ -60,21 +67,29 @@ Before implementing, dev agents MUST detect the project's tech stack by examinin
 
 #### React 19
 - Structure: src/components/, src/pages/, src/hooks/, src/services/
-- State: React hooks, context, or Zustand/Jotai
+- **Hooks clave**: `useActionState` (formularios), `useOptimistic` (UI optimista), `use()` (Contexts condicionales + Promises)
+- State: Zustand o Jotai (nunca Context para estado frecuente)
+- Styling: **Tailwind CSS v4** (CSS-first config con `@import "tailwindcss"`)
 - Build: Vite
 - Run: `npm run dev`
 - Test: Vitest + React Testing Library
+- E2E: Playwright con Page Object Model
 
 #### Next.js
 - Structure: app/ (App Router), components/, lib/
-- Rendering: Server Components by default, `"use client"` for client
-- API Routes: app/api/
+- Rendering: **Server Components por defecto**, `"use client"` solo para interactividad
+- **Server Actions** con `"use server"`: reemplazan API routes para mutaciones
+- Route Handlers: `route.ts` en `app/api/` para endpoints REST
+- Cache: `revalidatePath()` / `revalidateTag()` para invalidación
+- Middleware: `middleware.ts` en raíz — solo para auth/redirects, no lógica de negocio
 - Run: `npm run dev`
-- Test: Jest or Vitest + React Testing Library
+- Test: Jest con `nextJest()` + React Testing Library. Playwright para E2E
 
 #### Astro
 - Structure: src/pages/, src/components/, src/layouts/
-- Islands: Interactive components with `client:*` directives
+- **Islands Architecture**: componentes de framework son HTML estático por defecto — `client:load`, `client:visible`, `client:idle` para interactividad
+- **Multi-framework**: puede importar React, Svelte, Vue, Solid, Preact
+- SSG por defecto, SSR con adaptadores
 - Run: `npm run dev`
 - Test: Vitest
 
@@ -96,3 +111,8 @@ Before implementing, dev agents MUST detect the project's tech stack by examinin
 3. If NO stack is detected (new project), ask Luffy which stack to initialize
 4. .NET 10 is the PRIMARY backend — use it when user has no preference
 5. PostgreSQL+PostGIS is ALWAYS the database — no exceptions
+6. **Stacks no soportados**: si se detecta Ruby, Java/Spring, Vue, Angular, Svelte, u otro stack no listado:
+   - Luffy pregunta al usuario cómo proceder
+   - Robin investiga el stack con Context7 (`resolve-library-id` → `query-docs`)
+   - Los agentes dev adaptan sus prácticas generales al nuevo stack
+   - Las reglas de verificación de Law, testing de Usopp y seguridad de Jinbe aplican independientemente del stack

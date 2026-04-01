@@ -91,23 +91,53 @@ If NO stack is detected, report to Luffy and ask which stack to use.
 
 #### React 19
 - Server Components por defecto, `"use client"` solo cuando se necesita interactividad
+- **`useActionState`** (reemplaza al deprecado `useFormState`): `const [state, submitAction, isPending] = useActionState(actionFn, initialState)` — ideal para formularios, maneja automáticamente loading y errores
+- **`useOptimistic`**: `const [optimisticValue, setOptimisticValue] = useOptimistic(currentValue)` — actualiza UI inmediatamente, revierte si falla
+- **`use()`** hook: puede leer Contexts condicionalmente (a diferencia de `useContext`) y Promises directamente (integra con Suspense)
+- **Formularios**: preferir `useActionState` sobre `useState` + handlers manuales. Pasar `submitAction` al `action` del `<form>`
 - Estado global: Zustand o Jotai, nunca Context para estado frecuentemente cambiante
-- Formularios: React Hook Form + Zod para validación
-- Fetching: TanStack Query para estado del servidor
-- Nunca: useEffect para fetching de datos (usar TanStack Query o Server Components)
+- Fetching: TanStack Query para estado del servidor, o Server Components directamente
+- **Nunca**: `useEffect` para fetching de datos (usar TanStack Query o Server Components)
+- Siempre TypeScript
 - Componentes: máximo 150 líneas, extraer si crece más
 
 #### Next.js (App Router)
+- Estructura basada en carpetas: `app/page.tsx`, `app/layout.tsx`, `app/loading.tsx`, `app/error.tsx`
+- Por defecto TODOS los componentes en `app/` son Server Components — solo agregar `"use client"` cuando sea necesario (eventos, hooks de estado)
+- **Server Actions** con `"use server"`: reemplazan la necesidad de crear API routes manuales para mutaciones
+  - Se definen en archivos separados o inline
+  - Se importan directamente en Client Components
+  - Se integran nativamente con `<form action={serverAction}>`
+  - Soportan `redirect()` desde `next/navigation`
+- **Route Handlers**: archivos `route.ts` en `app/api/...` para endpoints REST — retornan `Response.json()` directamente
+- **Cache**: `revalidatePath()` y `revalidateTag()` para invalidar cache — nunca invalidar manualmente
+- **Middleware**: archivo `middleware.ts` en raíz con `NextRequest`/`NextResponse` — usar `matcher` para rutas específicas. Solo para logica edge (auth, redirects), no para lógica de negocio
 - Layouts para estructura compartida, no prop drilling
 - Loading.tsx y error.tsx en cada route segment
 - Metadata API para SEO en cada página
 - Image: siempre next/image con width, height y alt obligatorios
-- Nunca: getServerSideProps (está deprecado en App Router)
+- **Testing**: Jest + `nextJest()` que configura Next.js automáticamente + React Testing Library. Playwright para E2E
+- Nunca: `getServerSideProps` (deprecado en App Router)
 
 #### Astro
-- Islands: solo `client:load` para crítico above-the-fold, `client:visible` para el resto
+- **Componentes Astro**: archivos `.astro` con frontmatter entre `---` (JavaScript del servidor) y template HTML debajo
+- **Multi-framework**: puede importar componentes React, Svelte, Vue, Solid, Preact directamente
+- **Islands Architecture**: por defecto los componentes de framework se renderizan como HTML estático (cero JS). Para interactividad usar directivas `client:*`:
+  - `client:load` — solo para crítico above-the-fold (se hidrata inmediatamente)
+  - `client:visible` — para el resto (se hidrata cuando entra en viewport)
+  - `client:idle` — se hidrata cuando el browser está idle
+- SSG por defecto (HTML estático en build time). SSR con adaptadores para renderizado en servidor
 - Slots para composición de layouts
 - Content Collections para datos estructurados
+- Si se mezclan múltiples frameworks JSX: configurar `include` y `exclude` en `astro.config.mjs`
+
+#### Tailwind CSS v4
+- **CSS-first config**: importar con `@import "tailwindcss"` en CSS — personalizaciones con `@theme` en CSS (en lugar de `tailwind.config.js`)
+- **Dark mode**: prefijo `dark:` — por defecto usa `prefers-color-scheme: dark`
+- **Responsive**: prefijos mobile-first: `sm:`, `md:`, `lg:`, `xl:`, `2xl:`
+- **Colores**: escalas numéricas (gray-100 a gray-900), variables CSS `var(--color-gray-800)`
+- **Estados**: `hover:`, `focus:`, `active:`, `disabled:` para estilos condicionales
+- Zero-runtime: escanea HTML/JS y genera solo los estilos utilizados
 
 ### Reglas de verificación Chrome (obligatorias)
 1. Abrir nueva pestaña limpia (sin caché del componente anterior)

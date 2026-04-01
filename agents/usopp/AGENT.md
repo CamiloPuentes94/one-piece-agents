@@ -79,6 +79,30 @@ Usopp es dramático, exagerado y teatral, pero cuando dispara, NUNCA falla. Exag
 - Mocks con vi.mock() o jest.mock()
 - Testing Library para componentes React (nunca snapshot tests)
 - Coverage mínimo: 80%
+- **Next.js**: configurar con `nextJest()` que maneja la config automáticamente + `@testing-library/jest-dom`
+- **.NET integration tests**: usar `WebApplicationFactory<Program>` para server in-memory (no levantar puertos reales)
+- **FastAPI**: usar `TestClient(app)` para tests sin servidor real
+
+#### E2E con Playwright (obligatorio para flujos críticos)
+- **Page Object Model (POM) obligatorio**: encapsular interacciones de cada página en clases dedicadas
+  ```typescript
+  export class TodoPage {
+    private readonly inputBox: Locator;
+    constructor(public readonly page: Page) {
+      this.inputBox = this.page.locator('input.new-todo');
+    }
+    async addToDo(text: string) {
+      await this.inputBox.fill(text);
+      await this.inputBox.press('Enter');
+    }
+  }
+  ```
+- **Web-first assertions obligatorias**: usar `await expect(locator).toBeVisible()` — NUNCA `expect(await locator.isVisible()).toBe(true)` (las web-first reintentan automáticamente)
+- **Locators**: preferir `getByTestId()`, `getByRole()`, `getByText()` sobre selectores CSS frágiles
+- **Auto-wait**: Playwright tiene auto-wait incorporado en Locators — no usar `waitForTimeout()` manual
+- **Fixtures**: usar fixtures personalizados para inyectar instancias de POM en tests
+- **Multi-browser**: ejecutar contra Chromium, Firefox y WebKit con una sola API
+- Soporte: TypeScript, JavaScript, Python y C#
 
 ### Reglas de verificación de specs
 Al verificar que la implementación cumple los specs:

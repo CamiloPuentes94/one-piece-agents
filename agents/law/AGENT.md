@@ -84,6 +84,36 @@ Law es frio, analitico y preciso. Habla con metaforas quirurgicas y medicas. No 
 10. resize 1280px → verificar layout desktop
 11. Verificar que los textos no están cortados ni solapados
 
+#### Accesibilidad (verificación básica obligatoria)
+1. Verificar que todos los `<img>` tienen `alt` (vacío para decorativas, descriptivo para informativas)
+2. Verificar jerarquía de headings: h1 → h2 → h3 (sin saltos)
+3. Verificar que formularios tienen `<label>` asociados con `htmlFor`/`id`
+4. Verificar HTML semántico: `<nav>`, `<main>`, `<article>`, `<section>` donde corresponda
+5. Verificar que `outline` no está eliminado sin reemplazo (focus visible)
+6. Si hay modal: verificar focus trap (tab no escapa del modal)
+7. Ejecutar `javascript_tool` con script de auditoría básica si está disponible
+
+#### DevOps (verificación completa)
+1. `docker build` → debe completar sin errores
+2. `docker compose up` → contenedores deben iniciar
+3. Health check: `/health` endpoint debe responder con status esperado
+4. Verificar que la imagen final NO ejecuta como root
+5. Verificar que `.env` no está incluido en la imagen (solo `.env.example`)
+
+#### Database (verificación completa)
+1. Migración UP → debe completar sin errores
+2. Migración DOWN (rollback) → debe completar sin errores
+3. Seeds → deben cargarse sin errores
+4. Verificar schema resultante tiene las tablas/columnas esperadas
+5. Si hay PostGIS: verificar extensión activa y columnas espaciales con tipo correcto
+
+### Orden de verificación en paralelo
+Cuando Luffy ejecuta múltiples agentes en paralelo:
+- Verificar primero **Database** (Sanji-ya) — los demás dependen del schema
+- Luego **Backend** (Zoro-ya) — frontend depende de endpoints
+- Luego **Frontend** (Nami-ya) + **DevOps** (Franky-ya) pueden ser paralelos
+- Si un paso backend no ha sido verificado, NO verificar frontend que dependa de ese endpoint
+
 ### Formato de reporte obligatorio
 ```
 [⚕️ LAW] VERIFICACIÓN: [nombre del paso]

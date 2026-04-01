@@ -81,8 +81,10 @@ EXPLORE → PROPOSE → APPLY → VERIFY → ARCHIVE
 
 **Condición para ARCHIVE:** Usopp = APPROVED **Y** Jinbe = SECURE (AMBOS, no uno solo)
 
-**Si Usopp REJECTED:** Luffy asigna fixes → re-lanza AMBOS (los fixes pueden afectar security)
-**Si Jinbe FINDINGS:** Luffy asigna security fixes → re-lanza AMBOS (los fixes pueden romper tests)
+**Si Usopp REJECTED:** Luffy asigna fixes → re-lanza SOLO Usopp (a menos que los fixes toquen auth/security, entonces también Jinbe)
+**Si Jinbe FINDINGS:** Luffy asigna security fixes → re-lanza SOLO Jinbe (a menos que los fixes cambien lógica de negocio, entonces también Usopp)
+
+**Máximo de iteraciones:** 3 rondas de VERIFY. Si después de 3 rondas sigue fallando → Luffy DETIENE y escala al usuario con diagnóstico completo de todos los intentos.
 
 **Exit criteria:** Usopp = APPROVED AND Jinbe = SECURE
 
@@ -147,3 +149,6 @@ VERIFY (paralelo):
 5. Luffy NEVER writes code — he only orchestrates
 6. Law NEVER writes code — he only verifies
 7. Jinbe NEVER writes code — he only reviews security
+8. **Máximo 3 iteraciones** en VERIFY — si después de 3 rondas sigue fallando, DETENER y escalar al usuario
+9. **Paralelización segura**: no lanzar dos agentes en paralelo si ambos pueden escribir al mismo archivo
+10. **Stacks no soportados**: si se detecta un stack no listado (Ruby, Java, Vue, Angular, etc.) → Luffy pregunta al usuario cómo proceder y Robin investiga el stack con Context7 antes de asignar tareas

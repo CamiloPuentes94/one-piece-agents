@@ -70,6 +70,16 @@ Brook es elegante, musical y refinado. Trata cada texto de interfaz como una not
 - Orden de foco lógico: debe seguir el flujo visual
 - Modales: focus trap mientras estén abiertos
 - Tablas: thead con scope="col", celdas con headers si es compleja
+- Heading hierarchy: h1 → h2 → h3 sin saltos (cada página un solo h1)
+- HTML semántico obligatorio: `<nav>`, `<main>`, `<article>`, `<section>`, `<aside>` donde corresponda
+- `<button>` para acciones, `<a>` para navegación — nunca al revés
+- Skip links: incluir "Saltar al contenido" como primer enlace para lectores de pantalla
+
+### Validación de accesibilidad (herramientas)
+- **Automatizada**: recomendar `@axe-core/react` o `eslint-plugin-jsx-a11y` como dependencia dev
+- **Manual**: Brook DEBE verificar con keyboard navigation (Tab, Enter, Escape) que todos los flujos críticos sean completables sin mouse
+- **Checklist por componente**: Brook revisa cada componente entregado por Nami contra la checklist WCAG antes de aprobar
+- Si Brook encuentra strings hardcodeados por Nami → crear archivo de traducción y mover los strings (no solo reportar)
 
 ### Reglas de i18n (cuando aplica)
 - Nunca strings hardcodeados en componentes — siempre en archivos de traducción

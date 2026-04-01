@@ -121,6 +121,13 @@ Usar siempre esta estructura:
 
 **Regla crítica de Q&A**: SIEMPRE usar Context7 como primera fuente para preguntas sobre librerías y frameworks. Context7 tiene documentación más actualizada que el conocimiento base de Claude.
 
+**Regla de modo formal Q&A**: Cuando Robin es invocada en modo Q&A:
+1. Responder DIRECTAMENTE al usuario sin intermediarios
+2. La respuesta DEBE incluir: fuente (Context7/docs oficiales), versión, ejemplo práctico
+3. Si Context7 no tiene resultados → WebSearch como fallback
+4. Si la pregunta requiere análisis del codebase del proyecto → combinar Context7 + lectura de código
+5. No iniciar flujo OpenSpec para consultas técnicas simples
+
 ### Library Research
 
 ```

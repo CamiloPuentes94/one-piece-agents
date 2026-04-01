@@ -133,7 +133,12 @@ Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otr
 
 ```
 1. Receive mission from user
-2. Log: [🏴‍☠️ LUFFY] ¡Nueva misión recibida: "<mission>"!
+2. Mostrar BANNER DE FASE:
+   ╔══════════════════════════════════════════════════════════════╗
+   ║  🏴‍☠️ FASE 1 de 5: EXPLORE                                    ║
+   ║  Misión: <mission>                                            ║
+   ║  Agentes activos: Luffy + Robin                               ║
+   ╚══════════════════════════════════════════════════════════════╝
 3. Launch Robin to analyze existing codebase
 4. Enter INTERROGATOR MODE:
    a. Identify ALL ambiguities, gaps, and unknowns
@@ -156,7 +161,12 @@ Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otr
 ### Phase 2: PROPOSE
 
 ```
-1. Log: [🏴‍☠️ LUFFY] ¡Creando el plan de batalla!
+1. Mostrar BANNER DE FASE:
+   ╔══════════════════════════════════════════════════════════════╗
+   ║  🏴‍☠️ FASE 2 de 5: PROPOSE                                    ║
+   ║  Misión: <mission>                                            ║
+   ║  Agentes activos: Luffy + Robin                               ║
+   ╚══════════════════════════════════════════════════════════════╝
 2. Run: /opsx:propose <change-name>
    - Create proposal.md (what & why)
    - With Robin: create specs for each capability
@@ -176,13 +186,21 @@ Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otr
 ### Phase 3: APPLY
 
 ```
-1. Log: [🏴‍☠️ LUFFY] 🚀 FASE APPLY | <N> tareas — leyendo tasks.md
+1. Mostrar BANNER DE FASE:
+   ╔══════════════════════════════════════════════════════════════╗
+   ║  🏴‍☠️ FASE 3 de 5: APPLY                                      ║
+   ║  Misión: <mission>                                            ║
+   ║  Tareas: <N> total — Orden: <agente1> → <agente2> → ...      ║
+   ╚══════════════════════════════════════════════════════════════╝
 2. Read tasks.md and design.md from the active change
-3. Log: [🏴‍☠️ LUFFY] 🚀 FASE APPLY | <N> tareas — orden: <agente1> → <agente2> → ...
-4. For each task (respecting dependencies):
+3. For each task (respecting dependencies):
    a. Identify the correct agent for the task
    b. TaskCreate("<emoji agente> <AGENTE> — <descripción tarea>") para visibilidad en Claude Code
-   c. Log: [🏴‍☠️ LUFFY] → [EMOJI AGENTE] | <task description>
+   c. Mostrar BANNER DE ENTRADA:
+      ┌──────────────────────────────────────────────────────────────┐
+      │  ▶▶ ENTRA: [EMOJI] <AGENTE> — <descripción tarea>          │
+      │  Fase: APPLY | Tarea: <N> de <TOTAL>                        │
+      └──────────────────────────────────────────────────────────────┘
    d. Launch agent (Agent tool) with:
       - Primera instrucción: "Lee `.claude/one-piece-agents/<nombre>/AGENT.md` para tus instrucciones completas."
       - The specific task description
@@ -190,8 +208,19 @@ Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otr
       - Relevant design context
       - Any dependency outputs from previous tasks (e.g., Sanji's schema for Zoro)
    e. Receive agent result
-   f. TaskUpdate(id, status="in_progress", description="Law verificando...")
-   g. IMMEDIATELY launch Law (Agent tool):
+   f. Mostrar BANNER DE SALIDA del agente:
+      ┌──────────────────────────────────────────────────────────────┐
+      │  ✅ SALE: [EMOJI] <AGENTE> — COMPLETADO                     │
+      │  Resultado: <resumen breve del trabajo>                      │
+      │  Siguiente: ⚕️ LAW verifica → luego <SIGUIENTE AGENTE>      │
+      └──────────────────────────────────────────────────────────────┘
+   g. TaskUpdate(id, status="in_progress", description="Law verificando...")
+   h. Mostrar BANNER DE ENTRADA de Law:
+      ┌──────────────────────────────────────────────────────────────┐
+      │  ⚕️ ENTRA: LAW — Verificando trabajo de <AGENTE>-ya         │
+      │  Tipo: <Backend|Frontend|Database|DevOps>                    │
+      └──────────────────────────────────────────────────────────────┘
+   i. Launch Law (Agent tool):
       "Lee `.claude/one-piece-agents/law/AGENT.md`. Verifica el trabajo de [Agente]-ya.
       Tipo: [Backend|Frontend|Database|DevOps]
       Tarea verificada: <descripción>"
@@ -199,37 +228,73 @@ Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otr
       - Frontend: Law opens Chrome, checks console/network/responsive
       - Database: Law runs migration, checks seeds
       - DevOps: Law checks Docker build/compose/health
-   h. If Law PASS:
+   j. If Law PASS:
+      - Mostrar BANNER DE SALIDA de Law:
+        ┌──────────────────────────────────────────────────────────────┐
+        │  ⚕️ SALE: LAW — ✅ PASS                                     │
+        │  Verificación de <AGENTE>-ya: sin anomalías                  │
+        │  Siguiente: <qué viene ahora>                                │
+        └──────────────────────────────────────────────────────────────┘
       - TaskUpdate(id, status="completed")
-      - Log: [🏴‍☠️ LUFFY] ✅ TASK COMPLETA | <descripción>
+      - Mostrar BARRA DE PROGRESO:
+        [🏴‍☠️ LUFFY] 📊 PROGRESO | ████████░░░░░░░░ <N>/<TOTAL> tareas completadas
+          ✅ 1. <agente> — <descripción>
+          🔄 2. <agente> — <descripción> (en progreso)
+          ⏳ 3. <agente> — <descripción>
       - Continue to next task
-   i. If Law FAIL (1er fallo):
-      - Log: [🏴‍☠️ LUFFY] ❌ FAIL | Devolviendo a [Agente] para corrección
+   k. If Law FAIL (1er fallo):
+      - Mostrar BANNER DE SALIDA de Law con FAIL:
+        ┌──────────────────────────────────────────────────────────────┐
+        │  ⚕️ SALE: LAW — ❌ FAIL                                     │
+        │  Verificación de <AGENTE>-ya: <N> problemas                  │
+        │  → <problema 1>                                              │
+        │  Acción: Devolviendo a <AGENTE> (intento 2 de 3)            │
+        └──────────────────────────────────────────────────────────────┘
       - Re-launch same agent with Law's exact failure report
       - Re-verify with Law
-      - If Law PASS: TaskUpdate(id, status="completed"), continue
-   j. If Law FAIL (2do fallo consecutivo en misma tarea):
+      - If Law PASS: TaskUpdate(id, status="completed"), show progress, continue
+   l. If Law FAIL (2do fallo consecutivo en misma tarea):
       - Log: [🏴‍☠️ LUFFY] 🩺 ESCALANDO A CHOPPER | 2 fallos consecutivos en <tarea>
+      - Mostrar banner de ENTRADA de Chopper
       - TaskUpdate(id, status="in_progress", description="Chopper diagnosticando...")
       - Launch Chopper (Agent tool):
         "Lee `.claude/one-piece-agents/chopper/AGENT.md`.
         Diagnostica y aplica hotfix. Reporte de Law: <Law's exact FAIL report>
         Agente original: <nombre>. Tarea: <descripción>"
       - After Chopper fix: Re-verify with Law
-      - If Law PASS: TaskUpdate(id, status="completed"), continue
+      - If Law PASS: TaskUpdate(id, status="completed"), show progress, continue
       - If Law FAIL (3er fallo): STOP — notificar al usuario con diagnóstico completo
 5. Parallelize when tasks are independent:
    - Launch Zoro and Nami simultaneously if no API dependency yet
    - ALWAYS launch Sanji before Zoro when the change requires database schema
    - ALWAYS launch Robin for spec analysis before any dev agent if codebase is new
+   - **Conflictos de archivos compartidos**: si dos agentes en paralelo podrían escribir al mismo archivo (ej: config, routing), ejecutarlos secuencialmente
+   - **Orden de Law en paralelo**: verificar Database → Backend → Frontend/DevOps (respetar dependencias)
+
+### Reglas de iteración en VERIFY
+- Si Usopp REJECTED o Jinbe FAIL → devolver al agente correspondiente para corregir
+- Después de corrección → re-ejecutar SOLO al verificador que falló (no ambos)
+- **Máximo 3 iteraciones** de VERIFY → si después de 3 rondas sigue fallando, DETENER y escalar al usuario con diagnóstico completo
+- Nunca entrar en loop infinito de verify/fix/verify
 ```
 
 ### Phase 4: VERIFY
 
 ```
-1. Log: [🏴‍☠️ LUFFY] ¡Hora de la verificación final!
+1. Mostrar BANNER DE FASE:
+   ╔══════════════════════════════════════════════════════════════╗
+   ║  🏴‍☠️ FASE 4 de 5: VERIFY                                     ║
+   ║  Misión: <mission>                                            ║
+   ║  Agentes activos: Usopp (testing) + Jinbe (security)         ║
+   ╚══════════════════════════════════════════════════════════════╝
 2. TaskCreate("🎯 USOPP — test suite completa") y TaskCreate("🌊 JINBE — security review")
-3. Launch IN PARALLEL (dos Agent tool calls simultáneos):
+3. Mostrar BANNER DE ENTRADA paralelo:
+   ┌──────────────────────────────────────────────────────────────┐
+   │  ▶▶ ENTRA: 🎯 USOPP — Test suite completa + spec compliance │
+   │  ▶▶ ENTRA: 🌊 JINBE — Security review OWASP Top 10          │
+   │  (ejecutando en paralelo)                                     │
+   └──────────────────────────────────────────────────────────────┘
+4. Launch IN PARALLEL (dos Agent tool calls simultáneos):
    - Usopp (Agent tool):
      "Lee `.claude/one-piece-agents/usopp/AGENT.md` para tus instrucciones completas.
      Ejecuta la verificación final del change '<change-name>':
@@ -247,12 +312,20 @@ Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otr
 4. Collect results from both. ARCHIVE requires BOTH:
    - Usopp = APPROVED
    - Jinbe = SECURE
-5. If BOTH pass:
+5. Mostrar BANNERS DE SALIDA de cada verificador al recibir resultados:
+   ┌──────────────────────────────────────────────────────────────┐
+   │  ✅ SALE: 🎯 USOPP — APPROVED                                │
+   │  Tests: N/N passed | Coverage: X% | Specs: N/N               │
+   └──────────────────────────────────────────────────────────────┘
+   ┌──────────────────────────────────────────────────────────────┐
+   │  ✅ SALE: 🌊 JINBE — SECURE                                  │
+   │  Hallazgos: 0 Critical, 0 High, N Medium, N Low              │
+   └──────────────────────────────────────────────────────────────┘
+6. If BOTH pass:
    a. TaskUpdate(usopp_id, status="completed") y TaskUpdate(jinbe_id, status="completed")
-   b. Log: [🏴‍☠️ LUFFY] ¡La tripulación lo hizo! Todo verificado ✅
-   c. CHECKPOINT: Present full results to user (Usopp report + Jinbe report)
-   d. Ask: "¿Archivamos este cambio, nakama?"
-   e. WAIT for user approval
+   b. CHECKPOINT: Present full results to user (Usopp report + Jinbe report)
+   c. Ask: "¿Archivamos este cambio, nakama?"
+   d. WAIT for user approval
 6. If Usopp REJECTED:
    a. TaskUpdate(usopp_id, status="in_progress", description="fixing tests...")
    b. Assign fixes: Chopper for bugs, original agent for spec mismatch
@@ -267,7 +340,12 @@ Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otr
 
 ```
 1. ONLY if Usopp PASS + Jinbe PASS + User APPROVED
-2. Log: [🏴‍☠️ LUFFY] 🚀 FASE ARCHIVE | Preparando commit y archivando cambio
+2. Mostrar BANNER DE FASE:
+   ╔══════════════════════════════════════════════════════════════╗
+   ║  🏴‍☠️ FASE 5 de 5: ARCHIVE                                    ║
+   ║  Misión: <mission>                                            ║
+   ║  Commit + archive OpenSpec                                    ║
+   ╚══════════════════════════════════════════════════════════════╝
 3. Read: openspec/changes/<change>/proposal.md (para construir el mensaje de commit)
 4. Build commit message from proposal:
    - Type: feat|fix|refactor|chore según el tipo de cambio
@@ -278,8 +356,18 @@ Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otr
 5. Log: [🏴‍☠️ LUFFY] ▶️ EJECUTANDO | git add -A
 6. Log: [🏴‍☠️ LUFFY] ▶️ EJECUTANDO | git commit -m "<mensaje>"
 7. Run: /opsx:archive <change-name>
-8. Log: [🏴‍☠️ LUFFY] 🎉 MISIÓN COMPLETADA | <change-name> archivado
-9. Notificar al usuario: "El push lo haces tú cuando estés listo, nakama."
+8. Mostrar RESUMEN DE MISIÓN:
+   ╔══════════════════════════════════════════════════════════════╗
+   ║  🏴‍☠️ MISIÓN COMPLETADA                                       ║
+   ║  Nombre: <change-name>                                        ║
+   ║  Commit: <type>(<scope>): <descripción>                      ║
+   ╠══════════════════════════════════════════════════════════════╣
+   ║  Agentes que participaron:                                    ║
+   ║    <emoji> <Agente> — <resumen de su trabajo>                 ║
+   ║    ...para cada agente que participó...                       ║
+   ╠══════════════════════════════════════════════════════════════╣
+   ║  El push lo haces tú cuando estés listo, nakama.              ║
+   ╚══════════════════════════════════════════════════════════════╝
 ```
 
 **Formato del commit message:**
