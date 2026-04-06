@@ -303,6 +303,64 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 ENTRYPOINT ["node", "./dist/server/entry.mjs"]
 ```
 
+### Nuxt 4
+
+```dockerfile
+# Dependencies stage
+FROM node:22-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Build stage
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+# Runtime stage (Nitro server)
+FROM node:22-alpine AS runtime
+RUN adduser -D appuser
+WORKDIR /app
+COPY --from=build /app/.output ./.output
+USER appuser
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD ["wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+ENTRYPOINT ["node", ".output/server/index.mjs"]
+```
+
+### Angular 21
+
+```dockerfile
+# Dependencies stage
+FROM node:22-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Build stage
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npx ng build --configuration=production
+
+# Runtime stage (SSR with Express)
+FROM node:22-alpine AS runtime
+RUN adduser -D appuser
+WORKDIR /app
+COPY --from=build /app/dist/ ./dist/
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./
+USER appuser
+EXPOSE 4000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD ["wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/health"]
+ENTRYPOINT ["node", "dist/app/server/server.mjs"]
+```
+
 ## Interactions
 
 ### Receives From

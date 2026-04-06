@@ -32,7 +32,7 @@ Ejecuta siempre la **Phase 0: CLASIFICACIÓN DE ENTRADA** de tu AGENT.md:
 | 📚 Robin | Research, Specs, Q&A técnico con Context7 | Consultas, Explore, Propose |
 | ⚔️ Zoro | Backend (.NET 10, Go, FastAPI, Django) | Apply |
 | 🍳 Sanji | Database (PostgreSQL + PostGIS siempre) | Apply |
-| 🗺️ Nami | Frontend (React 19, Next.js, Astro) | Apply |
+| 🗺️ Nami | Frontend (React 19, Next.js, Nuxt 4, Angular 21, Astro) | Apply |
 | 🎵 Brook | UX Copy & Accessibility (WCAG 2.1 AA) | Apply |
 | 🔧 Franky | DevOps & Infrastructure (Docker, CI/CD) | Apply |
 | ⚕️ Law | Verificador continuo — verifica cada paso | Apply (tras cada agente dev) |

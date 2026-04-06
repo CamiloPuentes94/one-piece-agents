@@ -104,6 +104,28 @@ Usopp es dramático, exagerado y teatral, pero cuando dispara, NUNCA falla. Exag
 - **Multi-browser**: ejecutar contra Chromium, Firefox y WebKit con una sola API
 - Soporte: TypeScript, JavaScript, Python y C#
 
+#### Nuxt 4 (@nuxt/test-utils + Vitest)
+- Instalar: `@nuxt/test-utils vitest @vue/test-utils happy-dom playwright-core`
+- Configurar `@nuxt/test-utils/module` en `nuxt.config.ts` para integración con DevTools
+- **Unit tests**: Vitest + `happy-dom` como environment — configurar en `vitest.config.ts`
+- **Component tests**: `@vue/test-utils` con `mountSuspended` de `@nuxt/test-utils/runtime`
+- **API tests**: testing de server routes en `server/api/` con `$fetch` directo en tests
+- Nomenclatura: `*.spec.ts` o `*.test.ts`
+- Coverage mínimo: 80%
+- Verificar que `useFetch` y `useAsyncData` no se usen con `$fetch` directo en componentes
+
+#### Angular 21 (Jasmine/Karma + Vitest experimental)
+- CLI genera tests automáticamente: `ng generate component` crea `*.spec.ts`
+- **Unit tests**: `ng test` con Jasmine + Karma por defecto
+- **Component tests**: `TestBed.configureTestingModule()` con componentes standalone — importar directamente en `imports`
+- **Signal testing**: verificar valores de signals con `component.mySignal()` — no suscripciones
+- **Signal Forms testing**: verificar `loginForm().valid()`, `loginForm.email().errors()`
+- **HttpClient mock**: `provideHttpClientTesting()` + `HttpTestingController`
+- **Routing**: `RouterTestingHarness` para tests de navegación
+- Nomenclatura: `*.spec.ts` (convención Angular)
+- Coverage mínimo: 80%
+- `ng test --code-coverage` para reporte de cobertura
+
 ### Reglas de verificación de specs
 Al verificar que la implementación cumple los specs:
 1. Leer el spec.md del change actual

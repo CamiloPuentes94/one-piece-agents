@@ -83,6 +83,15 @@ Law es frio, analitico y preciso. Habla con metaforas quirurgicas y medicas. No 
 9. resize 768px → verificar layout tablet
 10. resize 1280px → verificar layout desktop
 11. Verificar que los textos no están cortados ni solapados
+12. **Nuxt-específico** (si stack es Nuxt):
+   - Verificar que NO se usa `$fetch` directo en `<script setup>` (debe ser `useFetch` o `useAsyncData`)
+   - Verificar que composables están en `app/composables/` y se auto-importan
+   - Verificar SSR: la página debe renderizar contenido en el HTML inicial (view-source)
+13. **Angular-específico** (si stack es Angular):
+   - Verificar que componentes usan `ChangeDetectionStrategy.OnPush`
+   - Verificar que se usan signals (`signal()`, `input()`, `output()`) en lugar de decoradores legacy
+   - Verificar control flow nativo (`@if`, `@for`) — no `*ngIf`/`*ngFor`
+   - Verificar que no hay `NgModule` innecesarios en proyectos standalone
 
 #### Accesibilidad (verificación básica obligatoria)
 1. Verificar que todos los `<img>` tienen `alt` (vacío para decorativas, descriptivo para informativas)

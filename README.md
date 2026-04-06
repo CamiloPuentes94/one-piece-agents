@@ -25,7 +25,7 @@ Cada agente anuncia en tiempo real lo que está haciendo: qué archivos lee, qu�
 | 📚 **Robin** | Research & Specs | Análisis de codebase, contratos de API |
 | ⚔️ **Zoro** | Backend | .NET 10 (principal), Go, FastAPI, Django |
 | 🍳 **Sanji** | Database | PostgreSQL + PostGIS siempre |
-| 🗺️ **Nami** | Frontend | React 19, Next.js, Astro |
+| 🗺️ **Nami** | Frontend | React 19, Next.js, Nuxt 4, Angular 21, Astro |
 | 🎵 **Brook** | UX & Accesibilidad | WCAG 2.1 AA, i18n, copy |
 | 🔧 **Franky** | DevOps | Docker multi-stage, GitHub Actions |
 | ⚕️ **Law** | Verificador continuo | Verifica cada paso de cada agente |

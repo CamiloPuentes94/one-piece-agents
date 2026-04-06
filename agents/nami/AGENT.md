@@ -56,6 +56,8 @@ Before implementing anything, detect the frontend stack from project files:
 | **React 19** | `package.json` with `"react": "^19"` or `"react": "19"`, no `next` dependency |
 | **Next.js** | `package.json` with `"next"` dependency, `next.config.*` file |
 | **Astro** | `package.json` with `"astro"` dependency, `astro.config.*` file |
+| **Nuxt 4** | `package.json` with `"nuxt"` dependency, `nuxt.config.*` file |
+| **Angular 21** | `package.json` with `"@angular/core"` dependency, `angular.json` file |
 
 ### Stack-Specific Conventions
 
@@ -78,6 +80,47 @@ Before implementing anything, detect the frontend stack from project files:
 - Islands: Interactive components with `client:*` directives
 - Run: `npm run dev`
 - Use islands architecture for interactivity
+
+#### Nuxt 4
+- Estructura: `app/` (nuevo srcDir por defecto), `app/pages/`, `app/components/`, `app/composables/`, `app/layouts/`, `server/api/`
+- Directorio `shared/` para código compartido entre Vue (frontend) y Nitro (server)
+- **Auto-imports**: composables, components y utilities se importan automáticamente — no usar `import` manual
+- **Data fetching**: `useFetch()` y `useAsyncData()` para SSR con hydration automática — NUNCA `$fetch` directo en componentes (causa doble fetch en SSR)
+- **$fetch**: solo usar directamente en event handlers o funciones del cliente, nunca en `<script setup>` a nivel top
+- **Server API**: rutas en `server/api/` con Nitro — se acceden como `/api/<ruta>`
+- **Middleware**: archivos en `middleware/` — se ejecutan antes de navegar a una ruta
+- **Layouts**: archivos en `app/layouts/` — `<NuxtLayout>` en `app.vue`
+- **State**: `useState()` composable para estado compartido entre componentes, `useCookie()` para cookies reactivas
+- **Config**: `nuxt.config.ts` con `defineNuxtConfig()` — `modules`, `runtimeConfig`, `app.head`
+- Build: Vite (integrado)
+- Run: `npx nuxi dev` o `npm run dev`
+- Test: `@nuxt/test-utils` + Vitest + `happy-dom` + `@vue/test-utils`
+- E2E: Playwright con `playwright-core`
+- TypeScript obligatorio (soporte zero-config)
+
+#### Angular 21
+- Estructura: `src/app/` (componentes, servicios, guards), `src/assets/`, `src/environments/`
+- **Standalone por defecto**: componentes sin `NgModule` — `imports` directamente en `@Component`
+- **Signals**: primitivo reactivo central — `signal()`, `computed()`, `effect()`, `linkedSignal()`
+- **input()/output()**: funciones que reemplazan decoradores `@Input()`/`@Output()`
+- **Signal Forms** (v21): `form()` + `FormField` basado en signals — reemplaza ReactiveFormsModule para formularios nuevos
+  - Validación funcional: `required()`, `email()`, `minLength()` como funciones
+  - Template: `[formField]="loginForm.email"` en lugar de `[formControl]`
+- **Control flow nativo**: `@if`, `@for`, `@switch` en templates — reemplaza `*ngIf`, `*ngFor`, `*ngSwitch`
+- **Zoneless**: `provideZonelessChangeDetection()` — sin Zone.js, mejor rendimiento
+- **Change Detection**: `ChangeDetectionStrategy.OnPush` como estándar con signals
+- **Resource API**: `resource()` para data fetching reactivo con `params` + `loader` async
+- **Deferrable Views**: `@defer` para lazy loading de componentes
+- **SSR**: `@angular/ssr/node` con Express — `AngularNodeAppEngine`
+- **Angular Aria**: paquete de accesibilidad para componentes
+- **DI**: `inject()` función — preferir sobre constructor injection
+- **HttpClient**: con interceptors funcionales (`provideHttpClient(withInterceptors([...]))`)
+- **Routing**: standalone con `provideRouter(routes)` + `RouterOutlet`
+- CLI: `ng serve`, `ng build`, `ng generate`, `ng test`
+- Run: `ng serve` o `npm start`
+- Test: `ng test` con Jasmine/Karma. Vitest experimental
+- E2E: Playwright (recomendado) o Cypress
+- Siempre TypeScript (obligatorio en Angular)
 
 If NO stack is detected, report to Luffy and ask which stack to use.
 
@@ -130,6 +173,9 @@ If NO stack is detected, report to Luffy and ask which stack to use.
 - Slots para composición de layouts
 - Content Collections para datos estructurados
 - Si se mezclan múltiples frameworks JSX: configurar `include` y `exclude` en `astro.config.mjs`
+- **Server Islands** (v5): directiva `server:defer` para componentes que se renderizan en paralelo en el servidor — mejora performance para componentes costosos
+- **Actions** (v5): `defineAction()` con validación Zod en `src/actions/` — equivalente a Server Actions
+- **Content Layer** (v5): sistema pluggable para gestionar contenido de cualquier fuente (local, Notion, CMS)
 
 #### Tailwind CSS v4
 - **CSS-first config**: importar con `@import "tailwindcss"` en CSS — personalizaciones con `@theme` en CSS (en lugar de `tailwind.config.js`)
@@ -138,6 +184,24 @@ If NO stack is detected, report to Luffy and ask which stack to use.
 - **Colores**: escalas numéricas (gray-100 a gray-900), variables CSS `var(--color-gray-800)`
 - **Estados**: `hover:`, `focus:`, `active:`, `disabled:` para estilos condicionales
 - Zero-runtime: escanea HTML/JS y genera solo los estilos utilizados
+
+#### Nuxt 4
+- SIEMPRE `useFetch()` o `useAsyncData()` para data fetching — nunca `$fetch` directo en `<script setup>`
+- Composables: crear en `app/composables/` — se auto-importan globalmente
+- Páginas con datos: usar `definePageMeta()` para metadata y middleware
+- Layouts: archivo `default.vue` en `app/layouts/` como layout base
+- Error handling: `useError()` + `error.vue` page para errores globales
+- SEO: `useHead()` o `useSeoMeta()` para meta tags dinámicos
+
+#### Angular 21
+- **Signals sobre decoradores**: preferir `signal()`, `input()`, `output()` sobre `@Input()`/`@Output()`
+- **Signal Forms sobre Reactive Forms**: para formularios nuevos, usar `form()` + validación funcional
+- **Standalone siempre**: nunca crear `NgModule` en proyectos nuevos
+- **OnPush obligatorio**: `ChangeDetectionStrategy.OnPush` en cada componente
+- **inject() sobre constructor**: preferir `inject(ServiceName)` sobre inyección por constructor
+- **Control flow nativo**: `@if`, `@for`, `@switch` — nunca `*ngIf`/`*ngFor` en código nuevo
+- **Lazy loading**: usar `@defer` para componentes pesados y `loadComponent` en rutas
+- **Zoneless**: habilitar `provideZonelessChangeDetection()` en proyectos nuevos
 
 ### Reglas de verificación Chrome (obligatorias)
 1. Abrir nueva pestaña limpia (sin caché del componente anterior)

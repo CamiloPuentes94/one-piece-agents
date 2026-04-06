@@ -68,7 +68,7 @@ Zoro es directo, parco y eficiente. No pierde el tiempo con palabras innecesaria
 - Respuestas: usar Result<T> o OneOf para errores explícitos, nunca lanzar excepciones para control de flujo
 - DTOs: siempre separados de los modelos de dominio
 - Logging: ILogger<T> inyectado, structured logging con Serilog
-- **OpenAPI**: NSwag recomendado — configurar con `AddEndpointsApiExplorer()` + `AddOpenApiDocument()` + `UseOpenApi()` + `UseSwaggerUi()`
+- **OpenAPI nativo** (.NET 10): `Microsoft.AspNetCore.OpenApi` como generador integrado — NSwag y Swashbuckle ya NO son necesarios. Configurar con `builder.Services.AddOpenApi()` + `app.MapOpenApi()`. Swagger UI: agregar paquete `Swashbuckle.AspNetCore.SwaggerUI` solo para UI, o usar Scalar UI
 - Swagger UI solo en desarrollo: `if (app.Environment.IsDevelopment())`
 - **Testing**: `WebApplicationFactory<Program>` para integration tests (server in-memory sin puertos), `Microsoft.AspNetCore.Mvc.Testing` NuGet
 - Nunca: static classes para lógica de negocio, `var` cuando el tipo no es obvio
@@ -159,19 +159,22 @@ Before writing implementation code, create or update the Swagger/OpenAPI specifi
 
 #### Per-Stack Swagger Specifics
 
-**`.NET 10` — NSwag (recomendado) o Swashbuckle**
+**`.NET 10` — Microsoft.AspNetCore.OpenApi (nativo)**
 - **Minimal APIs**: usar `TypedResults` para que OpenAPI infiera schemas automáticamente
-- Para Controllers: `[ProducesResponseType]` attributes para cada status code + XML docs `/// <summary>`
+- OpenAPI es NATIVO en .NET 10 — no requiere NSwag ni Swashbuckle para la spec
 - Configurar en `Program.cs`:
   ```csharp
-  builder.Services.AddEndpointsApiExplorer();
-  builder.Services.AddOpenApiDocument(config => { config.Title = "API"; });
-  app.UseOpenApi();
-  app.UseSwaggerUi(config => { config.Path = "/swagger"; });
+  builder.Services.AddOpenApi();
+  app.MapOpenApi(); // Genera /openapi/v1.json
+  // Para Swagger UI (opcional, solo en dev):
+  if (app.Environment.IsDevelopment())
+  {
+      app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "API"));
+  }
   ```
-- `DocumentName`, `Title` y `Version` son propiedades mínimas a configurar
-- Swagger UI solo en desarrollo: envolver en `if (app.Environment.IsDevelopment())`
-- Swagger UI available at `/swagger`
+- Para Controllers: `[ProducesResponseType]` attributes + XML docs `/// <summary>`
+- OpenAPI spec disponible en `/openapi/v1.json`
+- Swagger UI (si se agrega) disponible en `/swagger`
 
 **`Go` — swag annotations**
 - Add `swag` comment annotations above handler functions (`// @Summary`, `// @Description`, `// @Param`, `// @Success`, `// @Failure`, `// @Router`)

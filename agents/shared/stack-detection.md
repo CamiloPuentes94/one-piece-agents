@@ -62,6 +62,8 @@ Before implementing, dev agents MUST detect the project's tech stack by examinin
 | **React 19** | `package.json` with `"react": "^19"` or `"react": "19"`, no `next` dep |
 | **Next.js** | `package.json` with `"next"` dependency, `next.config.*` file |
 | **Astro** | `package.json` with `"astro"` dependency, `astro.config.*` file |
+| **Nuxt 4** | `package.json` with `"nuxt"` dependency, `nuxt.config.*` file |
+| **Angular 21** | `package.json` with `"@angular/core"` dependency, `angular.json` file |
 
 ### Stack-Specific Conventions
 
@@ -93,6 +95,28 @@ Before implementing, dev agents MUST detect the project's tech stack by examinin
 - Run: `npm run dev`
 - Test: Vitest
 
+#### Nuxt 4
+- Estructura: `app/` (srcDir), `app/pages/`, `app/components/`, `app/composables/`, `app/layouts/`, `server/api/`
+- Directorio `shared/` para código compartido Vue + Nitro
+- Auto-imports: composables, components, utilities — sin `import` manual
+- Data Fetching: `useFetch()`, `useAsyncData()` — NUNCA `$fetch` directo en componentes (doble fetch SSR)
+- State: `useState()` composable para estado compartido
+- Config: `nuxt.config.ts` con `defineNuxtConfig()`
+- Run: `npx nuxi dev` o `npm run dev`
+- Test: `@nuxt/test-utils` + Vitest + happy-dom
+
+#### Angular 21
+- Estructura: `src/app/` (componentes, servicios, guards), `angular.json` config
+- Standalone por defecto: componentes sin NgModule — `imports` en `@Component`
+- Signals: `signal()`, `computed()`, `effect()`, `linkedSignal()` — primitivo reactivo central
+- Signal Forms (v21): `form()` + `FormField` — reemplaza ReactiveFormsModule
+- Control flow nativo: `@if`, `@for`, `@switch` en templates
+- Zoneless: `provideZonelessChangeDetection()` — sin Zone.js
+- SSR: `@angular/ssr/node` con Express
+- Run: `ng serve` o `npm start`
+- Test: `ng test` (Jasmine/Karma), Vitest experimental
+- CLI: `ng generate`, `ng build`, `ng serve`, `ng test`
+
 ## Database (Always)
 
 | Stack | Always |
@@ -111,7 +135,7 @@ Before implementing, dev agents MUST detect the project's tech stack by examinin
 3. If NO stack is detected (new project), ask Luffy which stack to initialize
 4. .NET 10 is the PRIMARY backend — use it when user has no preference
 5. PostgreSQL+PostGIS is ALWAYS the database — no exceptions
-6. **Stacks no soportados**: si se detecta Ruby, Java/Spring, Vue, Angular, Svelte, u otro stack no listado:
+6. **Stacks no soportados**: si se detecta Ruby, Java/Spring, Svelte, u otro stack no listado:
    - Luffy pregunta al usuario cómo proceder
    - Robin investiga el stack con Context7 (`resolve-library-id` → `query-docs`)
    - Los agentes dev adaptan sus prácticas generales al nuevo stack
