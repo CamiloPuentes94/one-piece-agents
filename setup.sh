@@ -41,15 +41,89 @@ elif [ -f "$TARGET_PROJECT/.claude/AGENTS.md" ]; then
   echo "📄 AGENTS.md detectado en .claude/ — se referenciará en la configuración"
 fi
 
-# ── 4. Desplegar settings.json (permisos pre-aprobados para los agentes) ──────
+# ── 4. settings.json: permisos locales + hooks de identidad en global ─────────
+
+# 4A. Permisos locales → .claude/settings.json del proyecto destino
 TARGET_SETTINGS="$TARGET_PROJECT/.claude/settings.json"
-SOURCE_SETTINGS="$AGENTS_BASE/.claude/settings.json"
+
+PERMISSIONS_JSON='{
+  "permissions": {
+    "allow": ["Bash(*)", "Read(**)", "Write(**)", "Edit(**)"]
+  }
+}'
 
 if [ -f "$TARGET_SETTINGS" ]; then
-  echo "⚠️  .claude/settings.json ya existe en el proyecto — saltando"
+  # Mergear permisos sin pisar lo que ya existe (usando node)
+  MERGED=$(node -e "
+    const existing = JSON.parse(require('fs').readFileSync('$TARGET_SETTINGS', 'utf8'));
+    const incoming = $PERMISSIONS_JSON;
+    // Mergear allow: unión de los dos arrays sin duplicados
+    const existingAllow = (existing.permissions && existing.permissions.allow) || [];
+    const incomingAllow = incoming.permissions.allow;
+    const merged = { ...existing };
+    if (!merged.permissions) merged.permissions = {};
+    merged.permissions.allow = [...new Set([...existingAllow, ...incomingAllow])];
+    process.stdout.write(JSON.stringify(merged, null, 2));
+  " 2>/dev/null)
+  NODE_EXIT=$?
+  if [ $NODE_EXIT -eq 0 ] && [ -n "$MERGED" ]; then
+    echo "$MERGED" > "$TARGET_SETTINGS"
+    echo "✅ settings.json (local) — permisos mergeados en .claude/settings.json"
+  else
+    echo "⚠️  No se pudo mergear settings.json — se mantiene el existente"
+  fi
 else
-  cp "$SOURCE_SETTINGS" "$TARGET_SETTINGS"
-  echo "✅ settings.json copiado — Read/Write/Edit y comandos de agentes pre-aprobados"
+  echo "$PERMISSIONS_JSON" > "$TARGET_SETTINGS"
+  echo "✅ settings.json (local) — permisos pre-aprobados (Read/Write/Edit + Bash)"
+fi
+
+# 4B. Hooks de identidad → ~/.claude/settings.json (global)
+GLOBAL_SETTINGS="$HOME/.claude/settings.json"
+
+# Base64 del UserPromptSubmit (contiene tildes/unicode — DEBE ir en base64)
+HOOK_B64="eyJob29rU3BlY2lmaWNPdXRwdXQiOiB7Imhvb2tFdmVudE5hbWUiOiAiVXNlclByb21wdFN1Ym1pdCIsICJhZGRpdGlvbmFsQ29udGV4dCI6ICJSRUNPUkRBVE9SSU8gQ1LDjVRJQ08gREUgSURFTlRJREFEOiBFcmVzIE1vbmtleSBELiBMdWZmeSwgQ2FwaXTDoW4geSBBcnF1aXRlY3RvIE9ycXVlc3RhZG9yLiBOVU5DQSBlc2NyaWJhcyBjw7NkaWdvIGRpcmVjdGFtZW50ZSDigJQgbmkgdW5hIHNvbGEgbMOtbmVhLiBUdSDDum5pY2EgcmVzcG9uc2FiaWxpZGFkIGVzIENMQVNJRklDQVIgZWwgbWVuc2FqZSBkZWwgdXN1YXJpbyB5IERFTEVHQVIgYWwgYWdlbnRlIGNvcnJlY3RvIHVzYW5kbyBlbCBBZ2VudCB0b29sLiBSZWdsYXM6IGPDs2RpZ28gZnJvbnRlbmQg4oaSIE5hbWkgfCBjw7NkaWdvIGJhY2tlbmQg4oaSIFpvcm8gfCBkYXRhYmFzZSDihpIgU2FuamkgfCBEZXZPcHMg4oaSIEZyYW5reSB8IFVYL2FjY2VzaWJpbGlkYWQg4oaSIEJyb29rIHwgZGVidWcvaG90Zml4IOKGkiBDaG9wcGVyIHwgcmVzZWFyY2gvc3BlY3Mg4oaSIFJvYmluIHwgdmVyaWZpY2FjacOzbiDihpIgTGF3IHwgc2VndXJpZGFkIOKGkiBKaW5iZSB8IHRlc3RpbmcgZmluYWwg4oaSIFVzb3BwLiBMdWZmeSBTT0xPIG9ycXVlc3RhLCBOVU5DQSBpbXBsZW1lbnRhLiBDdWFscXVpZXIgZWRpY2nDs24gZGlyZWN0YSBkZSBhcmNoaXZvcyB2aW9sYSBsYXMgcmVnbGFzIGRlbCBDYXBpdMOhbi4ifX0="
+
+mkdir -p "$HOME/.claude"
+
+node -e "
+  const fs = require('fs');
+  const path = '$GLOBAL_SETTINGS';
+
+  const hooks = {
+    UserPromptSubmit: [{
+      hooks: [{
+        type: 'command',
+        command: 'echo \'$HOOK_B64\' | base64 --decode',
+        timeout: 5
+      }]
+    }],
+    SessionStart: [{
+      hooks: [{
+        type: 'command',
+        command: 'echo \'{\"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": \"IDENTIDAD ACTIVADA: Eres Monkey D. Luffy, Capitan de los Sombrero de Paja. Lee CLAUDE.md y .claude/one-piece-agents/luffy/AGENT.md para tus instrucciones completas. NUNCA escribas codigo - solo clasifica, delega y coordina a la tripulacion.\"}}\'',
+        timeout: 5
+      }]
+    }]
+  };
+
+  let existing = {};
+  if (fs.existsSync(path)) {
+    try { existing = JSON.parse(fs.readFileSync(path, 'utf8')); } catch(e) {}
+  }
+
+  // Mergear hooks: reemplazar los hooks de One Piece (idempotente)
+  if (!existing.hooks) existing.hooks = {};
+  existing.hooks.UserPromptSubmit = hooks.UserPromptSubmit;
+  existing.hooks.SessionStart = hooks.SessionStart;
+
+  fs.writeFileSync(path, JSON.stringify(existing, null, 2));
+  process.stdout.write('ok');
+" 2>/dev/null
+
+if [ $? -eq 0 ]; then
+  echo "✅ settings.json (global) — hooks de identidad Luffy instalados en ~/.claude/settings.json"
+else
+  echo "⚠️  No se pudieron instalar los hooks globales (node falló) — instálalos manualmente en ~/.claude/settings.json"
 fi
 
 # ── 5. Inicializar openspec ───────────────────────────────────────────────────
@@ -185,7 +259,8 @@ echo "🏴‍☠️ ¡La tripulación está lista para zarpar!"
 echo ""
 echo "  Lo que se instaló:"
 echo "  ✅ .claude/one-piece-agents/  → symlink a los 11 agentes"
-echo "  ✅ .claude/settings.json      → permisos pre-aprobados (Read/Write/Edit + Bash)"
+echo "  ✅ .claude/settings.json      → permisos locales (Read/Write/Edit + Bash)"
+echo "  ✅ ~/.claude/settings.json    → hooks de identidad Luffy (global, activos en todos los proyectos)"
 echo "  ✅ .claude/commands/opsx/     → comandos One Piece (explore/propose/apply/verify/archive)"
 echo "  ✅ CLAUDE.md                  → instrucción de activación de Luffy"
 echo ""

@@ -202,19 +202,90 @@ if (Test-Path (Join-Path $targetProject "AGENTS.md")) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PASO 5: Desplegar settings.json
+# PASO 5: settings.json — permisos locales + hooks de identidad en global
 # ══════════════════════════════════════════════════════════════════════════════
 
+# ── 5A. Permisos locales → .claude\settings.json del proyecto destino ────────
 $targetSettings = Join-Path $targetProject ".claude\settings.json"
-$sourceSettings = Join-Path $agentsBase ".claude\settings.json"
+
+$permissionsJson = @'
+{
+  "permissions": {
+    "allow": ["Bash(*)", "Read(**)", "Write(**)", "Edit(**)"]
+  }
+}
+'@
 
 if (Test-Path $targetSettings) {
-    Write-Host "⚠️  .claude\settings.json ya existe en el proyecto — saltando" -ForegroundColor Yellow
-} elseif (Test-Path $sourceSettings) {
-    Copy-Item $sourceSettings $targetSettings
-    Write-Host "✅ settings.json copiado — permisos pre-aprobados (Read/Write/Edit + Bash)" -ForegroundColor Green
+    # Mergear permisos sin pisar lo que ya existe (usando node)
+    $mergeScript = @"
+const fs = require('fs');
+const existing = JSON.parse(fs.readFileSync('$($targetSettings.Replace('\','\\'))', 'utf8'));
+const incoming = { permissions: { allow: ['Bash(*)', 'Read(**)', 'Write(**)', 'Edit(**)'] } };
+const existingAllow = (existing.permissions && existing.permissions.allow) || [];
+const merged = { ...existing };
+if (!merged.permissions) merged.permissions = {};
+merged.permissions.allow = [...new Set([...existingAllow, ...incoming.permissions.allow])];
+process.stdout.write(JSON.stringify(merged, null, 2));
+"@
+    $mergedResult = node -e $mergeScript 2>$null
+    if ($LASTEXITCODE -eq 0 -and $mergedResult) {
+        [System.IO.File]::WriteAllText($targetSettings, $mergedResult, [System.Text.UTF8Encoding]::new($false))
+        Write-Host "✅ settings.json (local) — permisos mergeados en .claude\settings.json" -ForegroundColor Green
+    } else {
+        Write-Host "⚠️  No se pudo mergear settings.json — se mantiene el existente" -ForegroundColor Yellow
+    }
 } else {
-    Write-Host "⚠️  .claude\settings.json no encontrado en el repo base — saltando" -ForegroundColor Yellow
+    [System.IO.File]::WriteAllText($targetSettings, $permissionsJson, [System.Text.UTF8Encoding]::new($false))
+    Write-Host "✅ settings.json (local) — permisos pre-aprobados (Read/Write/Edit + Bash)" -ForegroundColor Green
+}
+
+# ── 5B. Hooks de identidad → %USERPROFILE%\.claude\settings.json (global) ────
+$globalSettingsDir = Join-Path $env:USERPROFILE ".claude"
+$globalSettings = Join-Path $globalSettingsDir "settings.json"
+
+# Base64 del UserPromptSubmit (contiene tildes/unicode — DEBE ir en base64)
+$hookB64 = "eyJob29rU3BlY2lmaWNPdXRwdXQiOiB7Imhvb2tFdmVudE5hbWUiOiAiVXNlclByb21wdFN1Ym1pdCIsICJhZGRpdGlvbmFsQ29udGV4dCI6ICJSRUNPUkRBVE9SSU8gQ1LDjVRJQ08gREUgSURFTlRJREFEOiBFcmVzIE1vbmtleSBELiBMdWZmeSwgQ2FwaXTDoW4geSBBcnF1aXRlY3RvIE9ycXVlc3RhZG9yLiBOVU5DQSBlc2NyaWJhcyBjw7NkaWdvIGRpcmVjdGFtZW50ZSDigJQgbmkgdW5hIHNvbGEgbMOtbmVhLiBUdSDDum5pY2EgcmVzcG9uc2FiaWxpZGFkIGVzIENMQVNJRklDQVIgZWwgbWVuc2FqZSBkZWwgdXN1YXJpbyB5IERFTEVHQVIgYWwgYWdlbnRlIGNvcnJlY3RvIHVzYW5kbyBlbCBBZ2VudCB0b29sLiBSZWdsYXM6IGPDs2RpZ28gZnJvbnRlbmQg4oaSIE5hbWkgfCBjw7NkaWdvIGJhY2tlbmQg4oaSIFpvcm8gfCBkYXRhYmFzZSDihpIgU2FuamkgfCBEZXZPcHMg4oaSIEZyYW5reSB8IFVYL2FjY2VzaWJpbGlkYWQg4oaSIEJyb29rIHwgZGVidWcvaG90Zml4IOKGkiBDaG9wcGVyIHwgcmVzZWFyY2gvc3BlY3Mg4oaSIFJvYmluIHwgdmVyaWZpY2FjacOzbiDihpIgTGF3IHwgc2VndXJpZGFkIOKGkiBKaW5iZSB8IHRlc3RpbmcgZmluYWwg4oaSIFVzb3BwLiBMdWZmeSBTT0xPIG9ycXVlc3RhLCBOVU5DQSBpbXBsZW1lbnRhLiBDdWFscXVpZXIgZWRpY2nDs24gZGlyZWN0YSBkZSBhcmNoaXZvcyB2aW9sYSBsYXMgcmVnbGFzIGRlbCBDYXBpdMOhbi4ifX0="
+
+New-Item -ItemType Directory -Force -Path $globalSettingsDir | Out-Null
+
+$globalHookScript = @"
+const fs = require('fs');
+const path = '$($globalSettings.Replace('\','\\'))';
+
+const hooks = {
+  UserPromptSubmit: [{
+    hooks: [{
+      type: 'command',
+      command: 'powershell -Command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String(\'$hookB64\'))\"',
+      timeout: 5
+    }]
+  }],
+  SessionStart: [{
+    hooks: [{
+      type: 'command',
+      command: 'echo {\"hookSpecificOutput\": {\"hookEventName\": \"SessionStart\", \"additionalContext\": \"IDENTIDAD ACTIVADA: Eres Monkey D. Luffy, Capitan de los Sombrero de Paja. Lee CLAUDE.md y .claude/one-piece-agents/luffy/AGENT.md para tus instrucciones completas. NUNCA escribas codigo - solo clasifica, delega y coordina a la tripulacion.\"}}',
+      timeout: 5
+    }]
+  }]
+};
+
+let existing = {};
+if (fs.existsSync(path)) {
+  try { existing = JSON.parse(fs.readFileSync(path, 'utf8')); } catch(e) {}
+}
+if (!existing.hooks) existing.hooks = {};
+existing.hooks.UserPromptSubmit = hooks.UserPromptSubmit;
+existing.hooks.SessionStart = hooks.SessionStart;
+fs.writeFileSync(path, JSON.stringify(existing, null, 2));
+process.stdout.write('ok');
+"@
+
+$hookResult = node -e $globalHookScript 2>$null
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "✅ settings.json (global) — hooks de identidad Luffy instalados en %USERPROFILE%\.claude\settings.json" -ForegroundColor Green
+} else {
+    Write-Host "⚠️  No se pudieron instalar los hooks globales — instalalos manualmente en %USERPROFILE%\.claude\settings.json" -ForegroundColor Yellow
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -576,6 +647,13 @@ if ($verifyFailed -eq 0) {
     }
     Write-Host "  La tripulacion esta lista para zarpar!" -ForegroundColor Green
     Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "  Lo que se instalo:" -ForegroundColor White
+    Write-Host "    .claude\one-piece-agents\  — junction a los 11 agentes" -ForegroundColor Gray
+    Write-Host "    .claude\settings.json      — permisos locales (Read/Write/Edit + Bash)" -ForegroundColor Gray
+    Write-Host "    %USERPROFILE%\.claude\settings.json — hooks de identidad Luffy (global)" -ForegroundColor Gray
+    Write-Host "    .claude\commands\opsx\     — comandos One Piece (explore/propose/apply/verify/archive)" -ForegroundColor Gray
+    Write-Host "    CLAUDE.md                  — instruccion de activacion de Luffy" -ForegroundColor Gray
     Write-Host ""
     Write-Host "  Siguiente paso:" -ForegroundColor White
     Write-Host "    1. Reinicia Claude Code (para cargar los nuevos skills y commands)" -ForegroundColor Cyan
