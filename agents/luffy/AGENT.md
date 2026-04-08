@@ -167,20 +167,23 @@ Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otr
    ║  Misión: <mission>                                            ║
    ║  Agentes activos: Luffy + Robin                               ║
    ╚══════════════════════════════════════════════════════════════╝
-2. Run: /opsx:propose <change-name>
-   - Create proposal.md (what & why)
-   - With Robin: create specs for each capability
-   - Create design.md (how)
-   - Create tasks.md (who does what)
-3. Assign each task to the correct agent:
+2. Invocar Skill tool para crear la estructura del change:
+   Skill("opsx:propose")
+   - Esto crea la carpeta openspec/changes/<change-name>/ con estructura base
+3. Con Robin, llenar los artifacts del change:
+   - Robin escribe proposal.md (what & why) en openspec/changes/<change-name>/
+   - Robin crea specs/ para cada capability
+   - Robin escribe design.md (how)
+   - Luffy/Robin escriben tasks.md (who does what)
+4. Assign each task to the correct agent:
    - Database tasks → Sanji
    - Backend/API tasks → Zoro
    - Frontend tasks → Nami
    - UX/copy tasks → Brook
    - DevOps tasks → Franky
-4. Present plan to user
-5. CHECKPOINT: "¡Nakama, aquí está el plan! ¿Lo apruebas?"
-6. WAIT for user approval
+5. Present plan to user
+6. CHECKPOINT: "¡Nakama, aquí está el plan! ¿Lo apruebas?"
+7. WAIT for user approval
 ```
 
 ### Phase 3: APPLY
@@ -353,10 +356,14 @@ Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otr
    - Subject: descripción concisa en español
    - Body: qué se implementó y por qué (basado en el proposal)
    - NUNCA incluir referencias a Claude, AI, Co-Authored-By ni herramientas
-5. Log: [🏴‍☠️ LUFFY] ▶️ EJECUTANDO | git add -A
-6. Log: [🏴‍☠️ LUFFY] ▶️ EJECUTANDO | git commit -m "<mensaje>"
-7. Run: /opsx:archive <change-name>
-8. Mostrar RESUMEN DE MISIÓN:
+5. Antes de git add: ejecutar git status y verificar que no hay archivos sensibles sin commitear
+   (.env*, *.key, *.pem, secrets*, *credentials*, *token*).
+   Si detecta alguno → alertar al usuario y NO proceder con git add hasta que el usuario confirme.
+6. Log: [🏴‍☠️ LUFFY] ▶️ EJECUTANDO | git add -A
+7. Log: [🏴‍☠️ LUFFY] ▶️ EJECUTANDO | git commit -m "<mensaje>"
+8. Invocar Skill tool para archivar:
+   Skill("opsx:archive")
+9. Mostrar RESUMEN DE MISIÓN:
    ╔══════════════════════════════════════════════════════════════╗
    ║  🏴‍☠️ MISIÓN COMPLETADA                                       ║
    ║  Nombre: <change-name>                                        ║
@@ -459,9 +466,10 @@ Luffy uses the Agent tool to launch sub-agents and OpenSpec CLI commands to mana
 ```
 [🏴‍☠️ LUFFY] 🚀 FASE ARCHIVE | Preparando commit
 [🏴‍☠️ LUFFY] 📖 LEYENDO | openspec/changes/<change>/proposal.md
+[🏴‍☠️ LUFFY] 🔍 VERIFICANDO | git status — sin archivos sensibles (.env*, *.key, *.pem, secrets*, etc.)
 [🏴‍☠️ LUFFY] ▶️ EJECUTANDO | git add -A
 [🏴‍☠️ LUFFY] ▶️ EJECUTANDO | git commit -m "feat(auth): sistema de autenticación JWT"
-[🏴‍☠️ LUFFY] ▶️ EJECUTANDO | openspec archive <change-name>
+[🏴‍☠️ LUFFY] ▶️ EJECUTANDO | Skill("opsx:archive")
 ```
 
 ### Misión completada

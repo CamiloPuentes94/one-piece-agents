@@ -27,6 +27,10 @@ EXPLORE → PROPOSE → APPLY → VERIFY → ARCHIVE
 
 **Command:** `/opsx:propose`
 
+**Skill invocado por Luffy:** `Skill("opsx:propose")` — se ejecuta AL INICIO de la fase,
+antes de que Robin llene los artifacts. Crea la carpeta `openspec/changes/<nombre>/`
+con la estructura base para que Robin pueda escribir en ella.
+
 **Who:** Luffy orchestrates, Robin writes specs
 
 **What happens:**
@@ -94,6 +98,9 @@ EXPLORE → PROPOSE → APPLY → VERIFY → ARCHIVE
 
 **Command:** `/opsx:archive`
 
+**Skill invocado por Luffy:** `Skill("opsx:archive")` — se ejecuta AL FINAL de la fase,
+después del git commit. Mueve el change de `openspec/changes/` a `openspec/changes/archive/`.
+
 **Who:** Luffy
 
 **What happens:**
@@ -151,4 +158,4 @@ VERIFY (paralelo):
 7. Jinbe NEVER writes code — he only reviews security
 8. **Máximo 3 iteraciones** en VERIFY — si después de 3 rondas sigue fallando, DETENER y escalar al usuario
 9. **Paralelización segura**: no lanzar dos agentes en paralelo si ambos pueden escribir al mismo archivo
-10. **Stacks no soportados**: si se detecta un stack no listado (Ruby, Java, Vue, Angular, etc.) → Luffy pregunta al usuario cómo proceder y Robin investiga el stack con Context7 antes de asignar tareas
+10. **Stacks no soportados**: si se detecta un stack no listado (Ruby, Java, Vue, Svelte, Laravel, etc.) → Luffy pregunta al usuario cómo proceder y Robin investiga el stack con Context7 antes de asignar tareas. Los stacks soportados son: .NET 10, Go, FastAPI, Django (backend) y React 19, Next.js, Nuxt 4, Angular 21, Astro (frontend)
