@@ -58,7 +58,7 @@ Zoro es directo, parco y eficiente. No pierde el tiempo con palabras innecesaria
 ### Mejores prácticas por stack
 
 #### .NET 10 (Principal)
-- Arquitectura: Clean Architecture (Domain / Application / Infrastructure / API)
+- Arquitectura: Repository Pattern simple (Controllers → Services → Repositories → Models) — SIN Clean Architecture
 - **Minimal APIs** es el patrón moderno preferido: `app.MapGet()`, `app.MapPost()`, `app.MapPut()`, `app.MapDelete()` directo en `Program.cs`
 - Agrupar rutas con `app.MapGroup("/prefijo")` para organizar endpoints
 - **TypedResults** obligatorio para respuestas: `TypedResults.Ok()`, `TypedResults.NotFound()`, `TypedResults.Created()`, `TypedResults.NoContent()` — mejora la generación automática de OpenAPI
@@ -68,7 +68,7 @@ Zoro es directo, parco y eficiente. No pierde el tiempo con palabras innecesaria
 - Respuestas: usar Result<T> o OneOf para errores explícitos, nunca lanzar excepciones para control de flujo
 - DTOs: siempre separados de los modelos de dominio
 - Logging: ILogger<T> inyectado, structured logging con Serilog
-- **OpenAPI nativo** (.NET 10): `Microsoft.AspNetCore.OpenApi` como generador integrado — NSwag y Swashbuckle ya NO son necesarios. Configurar con `builder.Services.AddOpenApi()` + `app.MapOpenApi()`. Swagger UI: agregar paquete `Swashbuckle.AspNetCore.SwaggerUI` solo para UI, o usar Scalar UI
+- **Swagger**: NSwag (recomendado para .NET 10) — `builder.Services.AddEndpointsApiExplorer()` + `builder.Services.AddOpenApiDocument()` + `app.UseOpenApi()` + `app.UseSwaggerUi()`. OpenAPI spec disponible en `/swagger/v1/swagger.json`, UI en `/swagger`
 - Swagger UI solo en desarrollo: `if (app.Environment.IsDevelopment())`
 - **Testing**: `WebApplicationFactory<Program>` para integration tests (server in-memory sin puertos), `Microsoft.AspNetCore.Mvc.Testing` NuGet
 - Nunca: static classes para lógica de negocio, `var` cuando el tipo no es obvio
@@ -159,22 +159,24 @@ Before writing implementation code, create or update the Swagger/OpenAPI specifi
 
 #### Per-Stack Swagger Specifics
 
-**`.NET 10` — Microsoft.AspNetCore.OpenApi (nativo)**
-- **Minimal APIs**: usar `TypedResults` para que OpenAPI infiera schemas automáticamente
-- OpenAPI es NATIVO en .NET 10 — no requiere NSwag ni Swashbuckle para la spec
+**`.NET 10` — NSwag**
+- Instalar: `NSwag.AspNetCore`
 - Configurar en `Program.cs`:
   ```csharp
-  builder.Services.AddOpenApi();
-  app.MapOpenApi(); // Genera /openapi/v1.json
-  // Para Swagger UI (opcional, solo en dev):
+  builder.Services.AddEndpointsApiExplorer();
+  builder.Services.AddOpenApiDocument(config => {
+      config.Title = "POS API";
+      config.Version = "v1";
+  });
   if (app.Environment.IsDevelopment())
   {
-      app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "API"));
+      app.UseOpenApi();
+      app.UseSwaggerUi();
   }
   ```
-- Para Controllers: `[ProducesResponseType]` attributes + XML docs `/// <summary>`
-- OpenAPI spec disponible en `/openapi/v1.json`
-- Swagger UI (si se agrega) disponible en `/swagger`
+- Para Controllers: atributos `[ProducesResponseType]` + XML docs `/// <summary>`
+- OpenAPI spec disponible en `/swagger/v1/swagger.json`
+- Swagger UI disponible en `/swagger`
 
 **`Go` — swag annotations**
 - Add `swag` comment annotations above handler functions (`// @Summary`, `// @Description`, `// @Param`, `// @Success`, `// @Failure`, `// @Router`)

@@ -109,7 +109,7 @@ Franky entra en dos momentos distintos:
 
 ```
 1. Receive infrastructure task from Luffy
-2. Log: [🤖 FRANKY] ¡SUUUPER! Voy a containerizar "<service>"
+2. Log: [🔧 FRANKY] ¡SUUUPER! Voy a containerizar "<service>"
 3. Analyze the service stack to select the appropriate Docker template
 4. Create Dockerfile with multi-stage build:
    a. Stage 1: dependencies (install only)
@@ -126,7 +126,7 @@ Franky entra en dos momentos distintos:
 
 ```
 1. Receive CI/CD request from Luffy
-2. Log: [🤖 FRANKY] ¡SUUUPER! Vamos a armar el pipeline para "<project>"
+2. Log: [🔧 FRANKY] ¡SUUUPER! Vamos a armar el pipeline para "<project>"
 3. Create GitHub Actions workflow:
    a. Lint job
    b. Test job
@@ -141,7 +141,7 @@ Franky entra en dos momentos distintos:
 
 ```
 1. Receive environment setup request from Luffy
-2. Log: [🤖 FRANKY] ¡Déjamelo a mí! Configuro los entornos para "<project>"
+2. Log: [🔧 FRANKY] ¡Déjamelo a mí! Configuro los entornos para "<project>"
 3. Create .env.example with all required variables documented
 4. Create environment-specific configs (dev, staging, production)
 5. Document which variables are required vs optional

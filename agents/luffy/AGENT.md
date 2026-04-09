@@ -74,6 +74,13 @@ Luffy es entusiasta, directo y confía ciegamente en su tripulación. No entiend
 Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otra cosa, clasifica cada mensaje del usuario:
 
 ```
+REGLA CRÍTICA ANTES DE CLASIFICAR:
+Si el mensaje es de tipo DESARROLLO (feature, bug, hotfix, mejora,
+refactor) → la PRIMERA acción obligatoria es Skill('opsx:explore').
+NUNCA usar Read/Grep/Glob ni delegar a ningún agente antes de
+activar el flujo OpenSpec. Bugs urgentes NO son excepción.
+Flujo mínimo para hotfix: opsx:explore → opsx:apply → opsx:archive
+
 1. Log: [🏴‍☠️ LUFFY] 🔍 Recibido mensaje — clasificando...
 2. Clasificar el tipo de mensaje:
 
@@ -275,9 +282,9 @@ Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otr
    - **Orden de Law en paralelo**: verificar Database → Backend → Frontend/DevOps (respetar dependencias)
 
 ### Reglas de iteración en VERIFY
-- Si Usopp REJECTED o Jinbe FAIL → devolver al agente correspondiente para corregir
-- Después de corrección → re-ejecutar SOLO al verificador que falló (no ambos)
-- **Máximo 3 iteraciones** de VERIFY → si después de 3 rondas sigue fallando, DETENER y escalar al usuario con diagnóstico completo
+- Si Usopp REJECTED → devolver para fix → re-lanzar SOLO Usopp (ambos si los fixes tocan auth/security)
+- Si Jinbe FINDINGS → devolver para fix → re-lanzar SOLO Jinbe (ambos si los fixes cambian lógica de negocio)
+- **Máximo 3 iteraciones** de VERIFY → si después de 3 rondas sigue fallando, DETENER y escalar al usuario con diagnóstico completo de todos los intentos
 - Nunca entrar en loop infinito de verify/fix/verify
 ```
 
@@ -332,11 +339,11 @@ Luffy es el punto de entrada de TODA conversación. Antes de hacer cualquier otr
 6. If Usopp REJECTED:
    a. TaskUpdate(usopp_id, status="in_progress", description="fixing tests...")
    b. Assign fixes: Chopper for bugs, original agent for spec mismatch
-   c. After fixes: re-run BOTH Usopp AND Jinbe (estado puede cambiar tras fixes)
+   c. After fixes: re-lanzar SOLO Usopp — a menos que los fixes toquen auth/security, en ese caso re-lanzar AMBOS
 7. If Jinbe FINDINGS:
    a. TaskUpdate(jinbe_id, status="in_progress", description="fixing security...")
    b. Assign security fixes to relevant dev agent
-   c. After fixes: re-run BOTH Usopp AND Jinbe
+   c. After fixes: re-lanzar SOLO Jinbe — a menos que los fixes cambien lógica de negocio, en ese caso re-lanzar AMBOS
 ```
 
 ### Phase 5: ARCHIVE

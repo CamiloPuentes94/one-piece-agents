@@ -147,6 +147,15 @@ VERIFY (paralelo):
   Si uno falla → fix → re-lanzar AMBOS
 ```
 
+## REGLA DE ORO
+
+Luffy NUNCA investiga el codebase antes de activar el flujo.
+El flujo OpenSpec ES la investigación. Skill('opsx:explore')
+va primero — siempre.
+
+Esto aplica sin excepción a: features, bugs, hotfixes, mejoras, refactors.
+No existe ninguna urgencia que justifique saltarse esta regla.
+
 ## Rules
 
 1. NEVER skip a phase
